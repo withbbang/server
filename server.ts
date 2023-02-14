@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { logger } from './config/winston';
 const app = express();
 const cors = require('cors');
 const path = require('path');
@@ -18,6 +19,8 @@ app.use(cors()); // cors 설정
 app.get('/test', (req: Request, res: Response) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   console.log(ip);
+  // logger.info('GET /');
+  // logger.error('Error message');
   res.json({ value: 'hello' });
 });
 
@@ -26,4 +29,4 @@ app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, './views/index.html'));
 });
 
-app.listen(PORT, () => console.log('server is running...'));
+app.listen(PORT, () => console.log(`server is running on ${PORT}...`));
