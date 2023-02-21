@@ -1,7 +1,10 @@
 import express, { Request, Response } from 'express';
 import { logger } from './config/winston';
-import { dbConfig } from './config/dbConfig';
-const oracledb = require('oracledb');
+import { checkTodayVisit } from './modules/common';
+import { databaseInitiation, sql } from './modules/oracleSetting';
+import { SELECT_ALL_VISITHISTORY } from './queries/select';
+import { UPDATE_INCREMENT_VISITHISTORY } from './queries/update';
+const cookieParser = require('cookie-parser');
 const app = express();
 const cors = require('cors');
 const path = require('path');
@@ -11,52 +14,12 @@ import { server } from './server/server';
 
 const PORT = process.env.PORT || 3001;
 
-(async () => {
-  await oracledb.initOracleClient({
-    libDir:
-      'C:\\Users\\82107\\WorkSpace\\instantclient-basic-windows.x64-21.9.0.0.0dbru\\instantclient_21_9'
-  });
-
-  let connection = null;
-
-  try {
-    console.log('!!!!! ready to db conenction !!!!!');
-    connection = await oracledb.getConnection(dbConfig);
-  } catch (e) {
-    console.log(e);
-    throw new Error();
-  }
-
-  let binds = {};
-  let options = {
-    outFormat: oracledb.OUT_FORMAT_OBJECT // query result format
-  };
-
-  let result = null;
-  try {
-    result = await connection.execute(
-      'SELECT * FROM VISITHISTORY',
-      binds,
-      options
-    );
-  } catch (e) {
-    console.log(e);
-  }
-
-  console.log('!!!!! db response !!!!!');
-  console.log(result.rows[0]);
-
-  console.log('!!!!! db close !!!!!');
-  try {
-    await connection.close();
-  } catch (e) {
-    console.log(e);
-  }
-})();
+databaseInitiation();
 
 // 라우터들 사용
 app.use('/server', server);
 
+app.use(cookieParser('secret')); // cookieParser(secretKey, optionObj)
 app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
 app.use(cors()); // cors 설정
 
@@ -69,9 +32,16 @@ app.get('/test', (req: Request, res: Response) => {
   res.json({ value: 'hello' });
 });
 
-// 정적 소스 라우팅은 react build 파일에 일임한다는 뜻. 무조건 마지막에 처리해야함
-app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, './views/index.html'));
+// 정적 소스 라우팅은 react build 파일에 일임한다는 뜻. 무조건 마지막에 처리해야 모든 url 요청에서 받을 수 있음
+app.get('*', async (req: Request, res: Response) => {
+  console.log('visit?');
+  await checkTodayVisit(
+    req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+    req.signedCookies.visitDate,
+    res
+  );
+
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 app.listen(PORT, () => console.log(`server is running on ${PORT}...`));

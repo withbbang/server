@@ -1,0 +1,9 @@
+const UPDATE_INCREMENT_VISITHISTORY = `
+    UPDATE
+        VISITHISTORY
+    SET
+        TOTAL = TOTAL + 1
+        , TODAY = TODAY + 1
+`;
+
+export { UPDATE_INCREMENT_VISITHISTORY };
