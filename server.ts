@@ -1,5 +1,7 @@
 import express, { Request, Response } from 'express';
 import { logger } from './config/winston';
+import { dbConfig } from './config/dbConfig';
+const oracledb = require('oracledb');
 const app = express();
 const cors = require('cors');
 const path = require('path');
@@ -8,6 +10,49 @@ const path = require('path');
 import { server } from './server/server';
 
 const PORT = process.env.PORT || 3001;
+
+(async () => {
+  await oracledb.initOracleClient({
+    libDir:
+      'C:\\Users\\82107\\WorkSpace\\instantclient-basic-windows.x64-21.9.0.0.0dbru\\instantclient_21_9'
+  });
+
+  let connection = null;
+
+  try {
+    console.log('!!!!! ready to db conenction !!!!!');
+    connection = await oracledb.getConnection(dbConfig);
+  } catch (e) {
+    console.log(e);
+    throw new Error();
+  }
+
+  let binds = {};
+  let options = {
+    outFormat: oracledb.OUT_FORMAT_OBJECT // query result format
+  };
+
+  let result = null;
+  try {
+    result = await connection.execute(
+      'SELECT * FROM VISITHISTORY',
+      binds,
+      options
+    );
+  } catch (e) {
+    console.log(e);
+  }
+
+  console.log('!!!!! db response !!!!!');
+  console.log(result.rows[0]);
+
+  console.log('!!!!! db close !!!!!');
+  try {
+    await connection.close();
+  } catch (e) {
+    console.log(e);
+  }
+})();
 
 // 라우터들 사용
 app.use('/server', server);
