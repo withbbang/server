@@ -4,6 +4,7 @@ import { cookieConfig } from '../config/config';
 import { sql } from '../modules/oracleSetting';
 import { SELECT_VISITOR_IP } from '../queries/select';
 import { INSERT_TODAY_VISITOR_IP } from '../queries/insert';
+import { UPDATE_INCREMENT_VISITHISTORY } from '../queries/update';
 
 // 금일 방문 여부 체크
 export async function checkTodayVisit(
@@ -19,7 +20,8 @@ export async function checkTodayVisit(
     visitor?.length === 0
   ) {
     res.cookie('visitDate', curr, cookieConfig);
-    await sql(INSERT_TODAY_VISITOR_IP, { ip });
+    sql(INSERT_TODAY_VISITOR_IP, { ip });
+    sql(UPDATE_INCREMENT_VISITHISTORY, '');
   }
 }
 

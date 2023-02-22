@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { logger } from './config/winston';
 import { checkTodayVisit } from './modules/common';
-import { databaseInitiation, sql } from './modules/oracleSetting';
+import { databaseInitiation } from './modules/oracleSetting';
 import { startCrons } from './modules/cron';
 const cookieParser = require('cookie-parser');
 const app = express();
