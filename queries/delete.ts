@@ -1,0 +1,5 @@
+const DELETE_ALL_VISITOR = `
+    DELETE FROM VISITOR
+`;
+
+export { DELETE_ALL_VISITOR };

@@ -14,9 +14,12 @@ export async function checkTodayVisit(
   const curr: string = getLocaleTime();
   const visitor = await sql(SELECT_VISITOR_IP, { ip });
 
-  if (visitor?.length === 0 || !visitDate || moment(visitDate).isBefore(curr)) {
+  if (
+    (!visitDate || moment(visitDate).isBefore(curr)) &&
+    visitor?.length === 0
+  ) {
     res.cookie('visitDate', curr, cookieConfig);
-    sql(INSERT_TODAY_VISITOR_IP, { ip });
+    await sql(INSERT_TODAY_VISITOR_IP, { ip });
   }
 }
 
