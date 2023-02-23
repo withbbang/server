@@ -59,10 +59,12 @@ async function sql(query: string, params: any): Promise<any> {
   let result: any = null;
 
   try {
-    console.log('sql: ', query);
+    console.log(`SQL - ${query}`);
+    console.log(
+      `Parameters - ${Object.entries(binds).map(([k, v]) => k + ':' + v)}`
+    );
     result = await connection.execute(query, binds, options);
-    console.log('Query is done');
-    console.log(result?.rows);
+    console.log(`Total: ${result?.rows.length}`);
   } catch (e) {
     console.log(e);
   }
