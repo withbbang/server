@@ -64,7 +64,7 @@ async function sql(query: string, params: any): Promise<any> {
       `Parameters - ${Object.entries(binds).map(([k, v]) => k + ':' + v)}`
     );
     result = await connection.execute(query, binds, options);
-    console.log(`Total: ${result?.rows.length}`);
+    console.log(`Total: ${result?.rows?.length}`);
   } catch (e) {
     console.log(e);
   }
