@@ -1,13 +1,13 @@
 const oracledb = require('oracledb');
 import { dbConfig, libDir } from '../config/dbConfig';
 
-async function databaseInitiation() {
-  await initOracleClient();
-  await createConnectionPool();
+async function handleDatabaseInitiation() {
+  await handleInitOracleClient();
+  await handleCreateConnectionPool();
 }
 
 // oracle client 초기화
-async function initOracleClient() {
+async function handleInitOracleClient() {
   try {
     await oracledb.initOracleClient({ libDir });
     // console.log('Initiate oracle client');
@@ -18,7 +18,7 @@ async function initOracleClient() {
 }
 
 // connection pool 생성
-async function createConnectionPool() {
+async function handleCreateConnectionPool() {
   try {
     await oracledb.createPool({
       ...dbConfig,
@@ -36,7 +36,7 @@ async function createConnectionPool() {
 }
 
 // connection 가져오기
-async function getConnection() {
+async function handleGetConnection() {
   try {
     const connection = await oracledb.getConnection();
     console.log('Connection acquired.');
@@ -48,8 +48,8 @@ async function getConnection() {
 }
 
 // sql 실행
-async function sql(query: string, params: any): Promise<any> {
-  const connection = await getConnection();
+async function handleSql(query: string, params: any): Promise<any> {
+  const connection = await handleGetConnection();
 
   let binds = { ...params }; // 동적 쿼리 파라미터인듯
   let options = {
@@ -70,13 +70,13 @@ async function sql(query: string, params: any): Promise<any> {
     console.log(e);
   }
 
-  await releaseConnection(connection);
+  await handleReleaseConnection(connection);
 
   return result?.rows;
 }
 
 // connection pool 환원하기
-async function releaseConnection(connection: any) {
+async function handleReleaseConnection(connection: any) {
   try {
     connection.release();
     // console.log('Connection released.');
@@ -87,7 +87,7 @@ async function releaseConnection(connection: any) {
 }
 
 // connection pool 종료하기
-async function closePoolAndExit() {
+async function handleClosePoolAndExit() {
   console.log('\nTerminating');
 
   try {
@@ -99,6 +99,8 @@ async function closePoolAndExit() {
 }
 
 // 프로세스 강제 종료시 connection pool도 종료
-process.once('SIGTERM', closePoolAndExit).once('SIGINT', closePoolAndExit);
+process
+  .once('SIGTERM', handleClosePoolAndExit)
+  .once('SIGINT', handleClosePoolAndExit);
 
-export { databaseInitiation, sql };
+export { handleDatabaseInitiation, handleSql };
