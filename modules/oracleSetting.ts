@@ -25,7 +25,8 @@ async function createConnectionPool() {
       poolMax: 20,
       poolMin: 5,
       poolIncrement: 10,
-      poolTimeout: 60
+      poolTimeout: 60,
+      poolAlias: 'default'
     });
     // console.log('Pool created.');
   } catch (e) {
