@@ -2,14 +2,14 @@ import { dbConfig, libDir } from '../config/dbConfig';
 import oracledb from 'oracledb';
 
 async function handleDatabaseInitiation(): Promise<void> {
-  await handleInitOracleClient();
+  handleInitOracleClient();
   await handleCreateConnectionPool();
 }
 
 // oracle client 초기화
-async function handleInitOracleClient(): Promise<void> {
+function handleInitOracleClient(): void {
   try {
-    await oracledb.initOracleClient({ libDir });
+    oracledb.initOracleClient({ libDir });
     // console.log('Initiate oracle client');
   } catch (e) {
     console.error('Error initiating oracle client: ', e);
@@ -48,10 +48,13 @@ async function handleGetConnection(): Promise<oracledb.Connection> {
 }
 
 // sql 실행
-async function handleSql(query: string, params: any): Promise<any> {
+async function handleSql(
+  query: string,
+  params: undefined | any = undefined
+): Promise<any> {
   const connection: oracledb.Connection = await handleGetConnection();
 
-  let binds = { ...params }; // 동적 쿼리 파라미터인듯
+  let binds = params && { ...params }; // 동적 쿼리 파라미터인듯
   let options = {
     autoCommit: true, // 자동 커밋
     outFormat: oracledb.OUT_FORMAT_OBJECT // 쿼리 결과 포맷 (json 객체 형식)
@@ -60,12 +63,13 @@ async function handleSql(query: string, params: any): Promise<any> {
   let result: any = null;
 
   try {
-    console.log(`SQL - ${query}`);
-    console.log(
-      `Parameters - ${Object.entries(binds).map(([k, v]) => k + ':' + v)}`
-    );
+    console.log(`SQL >>> ${query}`);
+    binds &&
+      console.log(
+        `Parameters >>> ${Object.entries(binds).map(([k, v]) => k + ':' + v)}`
+      );
     result = await connection.execute(query, binds, options);
-    console.log(`Total: ${result?.rows?.length}`);
+    console.log(`Total >>> ${result?.rows?.length}`);
   } catch (e) {
     console.log(e);
   }

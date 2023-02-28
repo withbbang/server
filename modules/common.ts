@@ -30,7 +30,7 @@ export async function handleCheckTodayVisit(
 
   if (visitor?.length === 0) {
     handleSql(INSERT_TODAY_VISITOR_IP, { ip });
-    handleSql(UPDATE_INCREMENT_VISITHISTORY, '');
+    handleSql(UPDATE_INCREMENT_VISITHISTORY);
   }
 }
 
