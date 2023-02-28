@@ -38,7 +38,7 @@ async function handleCreateConnectionPool(): Promise<void> {
 // connection 가져오기
 async function handleGetConnection(): Promise<oracledb.Connection> {
   try {
-    const connection = await oracledb.getConnection();
+    const connection: oracledb.Connection = await oracledb.getConnection();
     console.log('Connection acquired.');
     return connection;
   } catch (e) {
@@ -49,7 +49,7 @@ async function handleGetConnection(): Promise<oracledb.Connection> {
 
 // sql 실행
 async function handleSql(query: string, params: any): Promise<any> {
-  const connection = await handleGetConnection();
+  const connection: oracledb.Connection = await handleGetConnection();
 
   let binds = { ...params }; // 동적 쿼리 파라미터인듯
   let options = {

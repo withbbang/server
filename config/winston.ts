@@ -5,9 +5,11 @@ const logDir: string = 'logs'; // logs 디렉토리 하위에 로그 파일 저�
 const { combine, timestamp, printf } = winston.format;
 
 // Define log format
-const logFormat = printf((info: winston.Logform.TransformableInfo): string => {
-  return `${info.level} ${info.timestamp}: ${info.message}`;
-});
+const logFormat: winston.Logform.Format = printf(
+  (info: winston.Logform.TransformableInfo): string => {
+    return `${info.level} ${info.timestamp}: ${info.message}`;
+  }
+);
 
 /*
  * Log Level
