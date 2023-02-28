@@ -1,17 +1,18 @@
-import express, { Request, Response } from 'express';
-import { logger } from './config/winston';
+import express, { Express, Request, Response } from 'express';
 import { handleCheckTodayVisit } from './modules/common';
 import { handleDatabaseInitiation } from './modules/oracleSetting';
 import { handleStartCrons } from './modules/cron';
-const cookieParser = require('cookie-parser');
-const app = express();
-const cors = require('cors');
-const path = require('path');
+import { logger } from './config/winston';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import cors from 'cors';
 
 // 라우터 임포트
 import { server } from './server/server';
 
-const PORT = process.env.PORT || 3001;
+const PORT: string | 3001 = process.env.PORT || 3001;
+
+const app: Express = express();
 
 app.use('/server', server); // 라우터들 사용
 app.use(cookieParser('secret')); // cookieParser(secretKey, optionObj)
@@ -22,7 +23,7 @@ handleDatabaseInitiation();
 handleStartCrons();
 
 // 데이터 요청 api는 정적 소스 라우팅보다 우선 선언해야함
-app.get('/test', (req: Request, res: Response) => {
+app.get('/test', function (req: Request, res: Response) {
   // const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress; // 접속자 ip
   // logger.info('GET /');
   // logger.error('Error message');
@@ -30,7 +31,7 @@ app.get('/test', (req: Request, res: Response) => {
 });
 
 // 정적 소스 라우팅은 react build 파일에 일임한다는 뜻. 무조건 마지막에 처리해야 모든 url 요청에서 받을 수 있음
-app.get('*', (req: Request, res: Response) => {
+app.get('*', function (req: Request, res: Response) {
   // await handleCheckTodayVisit(
   //   req.headers['x-forwarded-for'] || req.socket.remoteAddress,
   //   req.signedCookies.visitDate, // cookieConfig에서 secure: true일 경우 signedCookies로만 접근 가능
@@ -43,4 +44,6 @@ app.get('*', (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`server is running on ${PORT}...`));
+app.listen(PORT, function () {
+  console.log(`server is running on ${PORT}...`);
+});

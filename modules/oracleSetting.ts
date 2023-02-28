@@ -1,13 +1,13 @@
-const oracledb = require('oracledb');
 import { dbConfig, libDir } from '../config/dbConfig';
+import oracledb from 'oracledb';
 
-async function handleDatabaseInitiation() {
+async function handleDatabaseInitiation(): Promise<void> {
   await handleInitOracleClient();
   await handleCreateConnectionPool();
 }
 
 // oracle client 초기화
-async function handleInitOracleClient() {
+async function handleInitOracleClient(): Promise<void> {
   try {
     await oracledb.initOracleClient({ libDir });
     // console.log('Initiate oracle client');
@@ -18,7 +18,7 @@ async function handleInitOracleClient() {
 }
 
 // connection pool 생성
-async function handleCreateConnectionPool() {
+async function handleCreateConnectionPool(): Promise<void> {
   try {
     await oracledb.createPool({
       ...dbConfig,
@@ -36,7 +36,7 @@ async function handleCreateConnectionPool() {
 }
 
 // connection 가져오기
-async function handleGetConnection() {
+async function handleGetConnection(): Promise<oracledb.Connection> {
   try {
     const connection = await oracledb.getConnection();
     console.log('Connection acquired.');
@@ -76,7 +76,7 @@ async function handleSql(query: string, params: any): Promise<any> {
 }
 
 // connection pool 환원하기
-async function handleReleaseConnection(connection: any) {
+async function handleReleaseConnection(connection: any): Promise<void> {
   try {
     connection.release();
     // console.log('Connection released.');
@@ -87,7 +87,7 @@ async function handleReleaseConnection(connection: any) {
 }
 
 // connection pool 종료하기
-async function handleClosePoolAndExit() {
+async function handleClosePoolAndExit(): Promise<void> {
   console.log('\nTerminating');
 
   try {
