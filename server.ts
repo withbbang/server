@@ -1,14 +1,22 @@
+// 라이브러리 임포트
 import express, { Express, Request, Response } from 'express';
-import { handleCheckTodayVisit } from './modules/common';
-import { handleDatabaseInitiation } from './modules/oracleSetting';
-import { handleStartCrons } from './modules/cron';
-import { logger } from './config/winston';
+import { KeyPairSyncResult } from 'crypto';
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
 import path from 'path';
 import cors from 'cors';
 
+// 모듈 임포트
+import { handleSetKeyPair, decryptMessage } from './modules/crypto';
+import { handleDatabaseInitiation } from './modules/oracleSetting';
+import { handleCheckTodayVisit } from './modules/common';
+import { handleStartCrons } from './modules/cron';
+import { logger } from './config/winston';
+
 // 라우터 임포트
 import { server } from './server/server';
+
+dotenv.config(); // 환경변수 임포트
 
 const PORT: string | 3001 = process.env.PORT || 3001;
 
@@ -18,9 +26,24 @@ app.use('/server', server); // 라우터들 사용
 app.use(cookieParser('secret')); // cookieParser(secretKey, optionObj)
 app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
 app.use(cors()); // cors 설정
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 handleDatabaseInitiation();
 handleStartCrons();
+
+const { publicKey, privateKey }: KeyPairSyncResult<string, string> =
+  handleSetKeyPair();
+
+app.get('/key', function (req: Request, res: Response): void {
+  res.json({ publicKey });
+});
+
+app.post('/decrypt', function (req: Request, res: Response): void {
+  const plainText = decryptMessage(req.body.data, privateKey);
+
+  console.log('plainText: ', plainText);
+});
 
 // 데이터 요청 api는 정적 소스 라우팅보다 우선 선언해야함
 app.get('/test', function (req: Request, res: Response): void {

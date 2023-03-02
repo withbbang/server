@@ -1,4 +1,3 @@
-import { dbConfig, libDir } from '../config/dbConfig';
 import oracledb from 'oracledb';
 
 async function handleDatabaseInitiation(): Promise<void> {
@@ -9,7 +8,7 @@ async function handleDatabaseInitiation(): Promise<void> {
 // oracle client 초기화
 function handleInitOracleClient(): void {
   try {
-    oracledb.initOracleClient({ libDir });
+    oracledb.initOracleClient({ libDir: process.env.livDir });
     // console.log('Initiate oracle client');
   } catch (e) {
     console.error('Error initiating oracle client: ', e);
@@ -21,7 +20,9 @@ function handleInitOracleClient(): void {
 async function handleCreateConnectionPool(): Promise<void> {
   try {
     await oracledb.createPool({
-      ...dbConfig,
+      user: process.env.user,
+      password: process.env.password,
+      connectString: process.env.connectString,
       poolMax: 20,
       poolMin: 5,
       poolIncrement: 10,
