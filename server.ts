@@ -1,15 +1,13 @@
 // 라이브러리 임포트
 import express, { Express, Request, Response } from 'express';
-import { KeyPairSyncResult } from 'crypto';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import path from 'path';
 import cors from 'cors';
 
 // 모듈 임포트
-import { handleSetKeyPair, handleRSADecrypt } from './modules/crypto';
 import { handleDatabaseInitiation } from './modules/oracleSetting';
-import { handleCheckTodayVisit } from './modules/common';
+import { handleCheckTodayVisit, handleSetBodyParser } from './modules/common';
 import { handleStartCrons } from './modules/cron';
 import { logger } from './config/winston';
 
@@ -25,9 +23,8 @@ app.use('/server', server); // 라우터들 사용
 app.use(cookieParser('secret')); // cookieParser(secretKey, optionObj)
 app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
 app.use(cors()); // cors 설정
-app.use(express.json()); // post 요청시 body parser하려면 필수
-app.use(express.urlencoded({ extended: true })); // post 요청시 body parser하려면 필수
 
+handleSetBodyParser(app);
 handleDatabaseInitiation();
 handleStartCrons();
 

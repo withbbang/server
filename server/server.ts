@@ -1,4 +1,7 @@
+// 라이브러리 임포트
 import { Request, Response, Router } from 'express';
+
+// 모듈 임포트
 import { a } from './a';
 import { sign } from './sign';
 import { error } from './error';

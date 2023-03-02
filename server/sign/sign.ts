@@ -1,4 +1,5 @@
-import express, { Request, Response, Router } from 'express';
+import { Request, Response, Router } from 'express';
+import { handleSetBodyParser } from '../../modules/common';
 import {
   handleCreateSalt,
   handleCreateSha512,
@@ -8,10 +9,9 @@ import { Users } from '../../modules/testUser';
 
 export const sign: Router = Router();
 
-sign.use(express.json());
-sign.use(express.urlencoded({ extended: true }));
+handleSetBodyParser(sign);
 
-sign.post('/up', (req: Request, res: Response) => {
+sign.post('/up', function (req: Request, res: Response) {
   const user = Users.find((user: any) => user.id === req.body.id);
 
   if (user) {
@@ -31,7 +31,7 @@ sign.post('/up', (req: Request, res: Response) => {
   }
 });
 
-sign.post('/in', (req: Request, res: Response) => {
+sign.post('/in', function (req: Request, res: Response) {
   const user = Users.find((user: any) => user.id === req.body.id);
 
   if (user) {
