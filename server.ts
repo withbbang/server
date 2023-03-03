@@ -1,6 +1,5 @@
 // 라이브러리 임포트
 import express, { Express, Request, Response } from 'express';
-import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import path from 'path';
 import cors from 'cors';
@@ -14,15 +13,15 @@ import { logger } from './config/winston';
 // 라우터 임포트
 import { server } from './server/server';
 
-dotenv.config(); // 환경변수 임포트
+// 환경변수 임포트
+dotenv.config();
 
 const PORT: string | 3001 = process.env.PORT || 3001;
 const app: Express = express();
 
-app.use('/server', server); // 라우터들 사용
-app.use(cookieParser('secret')); // cookieParser(secretKey, optionObj)
-app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
 app.use(cors()); // cors 설정
+app.use('/server', server); // 라우터들 사용
+app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
 
 handleSetBodyParser(app);
 handleDatabaseInitiation();
