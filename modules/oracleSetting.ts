@@ -55,7 +55,9 @@ async function handleSql(
 ): Promise<any> {
   const connection: oracledb.Connection = await handleGetConnection();
 
-  let binds = params && { ...params }; // 동적 쿼리 파라미터인듯
+  console.log(params);
+
+  let binds = params ? { ...params } : {}; // 동적 쿼리 파라미터인듯
   let options = {
     autoCommit: true, // 자동 커밋
     outFormat: oracledb.OUT_FORMAT_OBJECT // 쿼리 결과 포맷 (json 객체 형식)
@@ -72,10 +74,11 @@ async function handleSql(
     result = await connection.execute(query, binds, options);
     console.log(`Total >>> ${result?.rows?.length}`);
   } catch (e) {
-    console.log(e);
+    console.log('Error excutting sql: ', e);
+    throw Error();
+  } finally {
+    await handleReleaseConnection(connection);
   }
-
-  await handleReleaseConnection(connection);
 
   return result?.rows;
 }

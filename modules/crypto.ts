@@ -33,12 +33,12 @@ function handleRSADecrypt(
     Buffer.from(encryptedMessage, 'base64')
   );
 
-  return decryptedMessage.toString('utf8');
+  return decryptedMessage.toString('utf-8');
 }
 
-// salt 생성
+// 레인보우 테이블을 막기 위한 salt 생성
 function handleCreateSalt(): string {
-  let randomBytes = Buffer.from('', 'base64');
+  let randomBytes = Buffer.from('');
 
   try {
     randomBytes = crypto.randomBytes(16);
@@ -47,11 +47,12 @@ function handleCreateSalt(): string {
     throw Error();
   }
 
-  return randomBytes.toString('utf-8');
+  return randomBytes.toString('hex');
 }
 
+// 해쉬 함수
 function handleCreateSha512(password: string, salt: string): string {
-  let sha512 = Buffer.from('', 'base64');
+  let sha512 = Buffer.from('');
 
   try {
     sha512 = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512');
@@ -60,7 +61,7 @@ function handleCreateSha512(password: string, salt: string): string {
     throw Error();
   }
 
-  return sha512.toString('utf-8');
+  return sha512.toString('hex');
 }
 
 export {

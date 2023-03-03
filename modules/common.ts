@@ -39,8 +39,11 @@ async function handleCheckTodayVisit(
 }
 
 // 현지 시간 계산
-function handleGetLocaleTime(): string {
-  return moment().tz('Asia/Seoul').format('YYYY-MM-DD');
+function handleGetLocaleTime(type: string = 'date'): string {
+  if (type === 'date') return moment().tz('Asia/Seoul').format('YYYY-MM-DD');
+  else if (type === 'db')
+    return moment().tz('Asia/Seoul').format('YYYYMMDDHHmmss');
+  else return moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
 }
 
 // body parser 세팅 함수

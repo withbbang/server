@@ -1,11 +1,13 @@
 import { Request, Response, Router } from 'express';
-import { handleSetBodyParser } from '../../modules/common';
+import { handleGetLocaleTime, handleSetBodyParser } from '../../modules/common';
 import {
   handleCreateSalt,
   handleCreateSha512,
   handleRSADecrypt
 } from '../../modules/crypto';
+import { handleSql } from '../../modules/oracleSetting';
 import { Users } from '../../modules/testUser';
+import { INSERT_USER } from '../../queries/insert';
 
 export const sign: Router = Router();
 
@@ -18,14 +20,15 @@ sign.post('/up', function (req: Request, res: Response) {
     res.send({ result: '이미 있는 유저다.' });
   } else {
     const salt = handleCreateSalt();
-    // const password = handleRSADecrypt(
-    //   req.body.password,
-    //   req.body.publicKey
-    // );
-    const sha512 = handleCreateSha512(req.body.password, salt);
+    const password = handleCreateSha512(req.body.password, salt);
 
-    Users.push({ id: req.body.id, sha512, salt });
-    console.log('Users: ', Users);
+    handleSql(INSERT_USER, {
+      id: req.body.id,
+      password,
+      salt,
+      auth: 0,
+      createdt: handleGetLocaleTime('db')
+    });
 
     res.send({ result: 'ok' });
   }
