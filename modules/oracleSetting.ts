@@ -55,8 +55,6 @@ async function handleSql(
 ): Promise<any> {
   const connection: oracledb.Connection = await handleGetConnection();
 
-  console.log(params);
-
   let binds = params ? { ...params } : {}; // 동적 쿼리 파라미터인듯
   let options = {
     autoCommit: true, // 자동 커밋
