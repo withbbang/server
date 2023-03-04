@@ -8,7 +8,7 @@ async function handleDatabaseInitiation(): Promise<void> {
 // oracle client 초기화
 function handleInitOracleClient(): void {
   try {
-    oracledb.initOracleClient({ libDir: process.env.livDir });
+    oracledb.initOracleClient({ libDir: process.env.libDir });
     // console.log('Initiate oracle client');
   } catch (e) {
     console.error('Error initiating oracle client: ', e);
