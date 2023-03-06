@@ -1,21 +1,22 @@
 import crypto, { generateKeyPairSync } from 'crypto';
 
 // 개인키, 공개키 key pair 생성
-function handleSetKeyPair(): crypto.KeyPairSyncResult<string, string> {
-  return generateKeyPairSync('rsa', {
-    modulusLength: 4096,
-    publicKeyEncoding: {
-      type: 'pkcs1',
-      format: 'pem'
-    },
-    privateKeyEncoding: {
-      type: 'pkcs1',
-      format: 'pem',
-      cipher: 'aes-256-cbc',
-      passphrase: process.env.passphrase
-    }
-  });
-}
+const { publicKey, privateKey }: crypto.KeyPairSyncResult<string, string> =
+  (function () {
+    return generateKeyPairSync('rsa', {
+      modulusLength: 1024,
+      publicKeyEncoding: {
+        type: 'pkcs1',
+        format: 'pem'
+      },
+      privateKeyEncoding: {
+        type: 'pkcs1',
+        format: 'pem',
+        cipher: 'aes-256-cbc',
+        passphrase: process.env.passphrase
+      }
+    });
+  })();
 
 // RSA 복호화
 function handleRSADecrypt(
@@ -65,7 +66,8 @@ function handleCreateSha512(password: string, salt: string): string {
 }
 
 export {
-  handleSetKeyPair,
+  publicKey,
+  privateKey,
   handleRSADecrypt,
   handleCreateSalt,
   handleCreateSha512

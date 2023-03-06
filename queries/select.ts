@@ -14,4 +14,13 @@ const SELECT_VISITOR_IP = `
         IP = :ip
 `;
 
-export { SELECT_ALL_VISITHISTORY, SELECT_VISITOR_IP };
+const SELECT_USER = `
+    SELECT
+        ID
+    FROM
+        USERS
+    WHERE
+        ID = :id
+`;
+
+export { SELECT_ALL_VISITHISTORY, SELECT_VISITOR_IP, SELECT_USER };

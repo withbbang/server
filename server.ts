@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 import path from 'path';
 import cors from 'cors';
 
+// 환경변수 임포트
+dotenv.config();
+
 // 모듈 임포트
 import { handleDatabaseInitiation } from './modules/oracleSetting';
 import { handleCheckTodayVisit, handleSetParser } from './modules/common';
@@ -12,9 +15,6 @@ import { logger } from './config/winston';
 
 // 라우터 임포트
 import { server } from './server/server';
-
-// 환경변수 임포트
-dotenv.config();
 
 const PORT: string | 3001 = process.env.PORT || 3001;
 const app: Express = express();
