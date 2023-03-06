@@ -6,7 +6,7 @@ import cors from 'cors';
 
 // 모듈 임포트
 import { handleDatabaseInitiation } from './modules/oracleSetting';
-import { handleCheckTodayVisit, handleSetBodyParser } from './modules/common';
+import { handleCheckTodayVisit, handleSetParser } from './modules/common';
 import { handleStartCrons } from './modules/cron';
 import { logger } from './config/winston';
 
@@ -23,7 +23,7 @@ app.use(cors()); // cors 설정
 app.use('/server', server); // 라우터들 사용
 app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
 
-handleSetBodyParser(app);
+handleSetParser(app);
 handleDatabaseInitiation();
 handleStartCrons();
 

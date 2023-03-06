@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { handleGetLocaleTime, handleSetBodyParser } from '../../modules/common';
+import { handleGetLocaleTime, handleSetParser } from '../../modules/common';
 import {
   handleCreateSalt,
   handleCreateSha512,
@@ -11,7 +11,7 @@ import { INSERT_USER } from '../../queries/insert';
 
 export const sign: Router = Router();
 
-handleSetBodyParser(sign);
+handleSetParser(sign);
 
 sign.post('/up', function (req: Request, res: Response) {
   const user = Users.find((user: any) => user.id === req.body.id);

@@ -39,10 +39,10 @@ function handleGetLocaleTime(type: string = 'date'): string {
 }
 
 // body parser 및 cookie parser 세팅 함수
-function handleSetBodyParser(app: Express | Router): void {
+function handleSetParser(app: Express | Router): void {
   app.use(express.json()); // post 요청시 body parser하려면 필수
   app.use(express.urlencoded({ extended: true })); // post 요청시 body parser하려면 필수
   app.use(cookieParser(process.env.cookieKey)); // cookieParser(secretKey, optionObj)
 }
 
-export { handleCheckTodayVisit, handleGetLocaleTime, handleSetBodyParser };
+export { handleCheckTodayVisit, handleGetLocaleTime, handleSetParser };
