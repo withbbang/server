@@ -40,7 +40,7 @@ async function handleCreateConnectionPool(): Promise<void> {
 async function handleGetConnection(): Promise<oracledb.Connection> {
   try {
     const connection: oracledb.Connection = await oracledb.getConnection();
-    console.log('Connection acquired.');
+    // console.log('Connection acquired.');
     return connection;
   } catch (e) {
     console.error('Error getting connection: ', e);
@@ -70,7 +70,8 @@ async function handleSql(
         `Parameters >>> ${Object.entries(binds).map(([k, v]) => k + ':' + v)}`
       );
     result = await connection.execute(query, binds, options);
-    console.log(`Total >>> ${result?.rows?.length}`);
+    typeof result?.rows?.length === 'number' &&
+      console.log(`Total >>> ${result?.rows?.length}`);
   } catch (e) {
     console.log('Error excutting sql: ', e);
     throw Error();

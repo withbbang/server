@@ -17,6 +17,8 @@ const SELECT_VISITOR_IP = `
 const SELECT_USER = `
     SELECT
         ID
+        , PASSWORD
+        , SALT
     FROM
         USERS
     WHERE

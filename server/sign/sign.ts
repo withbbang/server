@@ -5,7 +5,6 @@ import {
   handleCreateSalt,
   handleCreateSha512,
   handleRSADecrypt,
-  publicKey,
   privateKey
 } from '../../modules/crypto';
 import { handleSql } from '../../modules/oracleSetting';
@@ -18,8 +17,11 @@ export const sign: Router = Router();
 handleSetParser(sign);
 
 sign.get('/', function (req: Request, res: Response): void {
-  console.log(publicKey, privateKey);
+  res.send({ key: 'hello' });
+});
 
+sign.post('/', function (req: Request, res: Response): void {
+  console.log('body: ', req.body);
   res.send({ key: 'hello' });
 });
 
@@ -40,7 +42,7 @@ sign.post('/up', async function (req: Request, res: Response): Promise<void> {
   } else {
     const salt: string = handleCreateSalt();
     const password: string = handleCreateSha512(
-      handleRSADecrypt(req.body.password, ''),
+      handleRSADecrypt(req.body.password, privateKey),
       salt
     );
 
@@ -62,18 +64,32 @@ sign.post('/up', async function (req: Request, res: Response): Promise<void> {
   }
 });
 
-sign.post('/in', function (req: Request, res: Response) {
-  const user = Users.find((user: any) => user.id === req.body.id);
+sign.post('/in', async function (req: Request, res: Response) {
+  let user = null;
 
-  if (user) {
-    const salt: string = user.salt;
-    const sha512: string = handleCreateSha512(req.body.password, salt);
-    if (sha512 === user.sha512) {
+  try {
+    user = await handleSql(SELECT_USER, { id: req.body.id });
+  } catch (e) {
+    console.error('Error finding user: ', e);
+    res.send({ result: 'bad' });
+    throw Error();
+  }
+
+  if (user.length > 0) {
+    const salt: string = user[0].salt;
+    const password: string = handleCreateSha512(
+      handleRSADecrypt(req.body.password, privateKey),
+      salt
+    );
+    if (password === user[0].password) {
+      //TODO: 토큰 생성
       res.send({ result: '로그인 완료.' });
     } else {
+      //TODO: 에러
       res.send({ result: '비밀번호 틀림.' });
     }
   } else {
+    //TODO: 에러
     res.send({ result: '없는 유저다.' });
   }
 });
