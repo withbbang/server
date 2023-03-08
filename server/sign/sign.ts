@@ -22,6 +22,11 @@ sign.post('/', function (req: Request, res: Response): void {
   res.send({ key: 'hello' });
 });
 
+/**
+ * 회원가입
+ * @param id        회원 아이디
+ * @param password  회원 비밀번호
+ */
 sign.post(
   '/up',
   async function (
@@ -31,6 +36,7 @@ sign.post(
   ): Promise<void> {
     let length: number = 0;
 
+    /* 1. 회원 존재 여부 확인 */
     try {
       const user = await handleSql(SELECT_USER, { id: req.body.id });
       length = user.length;
@@ -41,6 +47,7 @@ sign.post(
     if (length > 0) {
       res.send({ result: '이미 있는 유저다.' });
     } else {
+      /* 2. 비밀번호 RSA 복호화 */
       let decrypted: string = '';
       try {
         decrypted = handleRSADecrypt(req.body.password, privateKey);
@@ -48,6 +55,7 @@ sign.post(
         handleCatchClause('N', e, e.message, next);
       }
 
+      /* 3. salt 생성 */
       let salt: string = '';
       try {
         salt = handleCreateSalt();
@@ -55,6 +63,7 @@ sign.post(
         handleCatchClause('N', e, e.message, next);
       }
 
+      /* 4. 비밀번호 해쉬화 */
       let password: string = '';
       try {
         password = salt && handleCreateSha512(decrypted, salt);
@@ -62,6 +71,7 @@ sign.post(
         handleCatchClause('N', e, e.message, next);
       }
 
+      /* 5. 회원 추가 */
       try {
         password &&
           salt &&
@@ -81,11 +91,17 @@ sign.post(
   }
 );
 
+/**
+ * 로그인
+ * @param id        회원 아이디
+ * @param password  회원 비밀번호
+ */
 sign.post(
   '/in',
   async function (req: Request, res: Response, next: NextFunction) {
     let user = null;
 
+    /* 1. 회원 존재 여부 확인 */
     try {
       user = await handleSql(SELECT_USER, { id: req.body.id });
     } catch (e: any) {
