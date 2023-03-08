@@ -14,6 +14,7 @@ import {
   handleErrorMiddleware
 } from './modules/common';
 import { handleStartCrons } from './modules/cron';
+import { handleProcess } from './modules/process';
 import { logger } from './config/winston';
 
 // 라우터 임포트
@@ -22,6 +23,7 @@ import { server } from './server/server';
 const PORT: string | 3001 = process.env.PORT || 3001;
 const app: Express = express();
 
+handleProcess();
 handleStartCrons();
 
 handleSetParser(app);

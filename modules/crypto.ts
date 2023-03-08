@@ -29,17 +29,24 @@ function handleRSADecrypt(
     padding: crypto.constants.RSA_PKCS1_PADDING
   };
 
-  const decryptedMessage = crypto.privateDecrypt(
-    rsaPrivateKey,
-    Buffer.from(encryptedMessage, 'base64')
-  );
+  let decryptedMessage: Buffer = Buffer.from('');
+
+  try {
+    decryptedMessage = crypto.privateDecrypt(
+      rsaPrivateKey,
+      Buffer.from(encryptedMessage, 'base64')
+    );
+  } catch (e) {
+    console.error(e);
+    throw new Error('Decrypting password');
+  }
 
   return decryptedMessage.toString('utf-8');
 }
 
 // 레인보우 테이블을 막기 위한 salt 생성
 function handleCreateSalt(): string {
-  let randomBytes = Buffer.from('');
+  let randomBytes: Buffer = Buffer.from('');
 
   try {
     randomBytes = crypto.randomBytes(16);
@@ -53,7 +60,7 @@ function handleCreateSalt(): string {
 
 // 해쉬 함수
 function handleCreateSha512(password: string, salt: string): string {
-  let sha512 = Buffer.from('');
+  let sha512: Buffer = Buffer.from('');
 
   try {
     sha512 = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512');

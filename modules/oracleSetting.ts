@@ -119,9 +119,4 @@ async function handleClosePoolAndExit(): Promise<void> {
   }
 }
 
-// 프로세스 강제 종료시 connection pool도 종료
-process
-  .once('SIGTERM', handleClosePoolAndExit)
-  .once('SIGINT', handleClosePoolAndExit);
-
-export { handleSql };
+export { handleSql, handleClosePoolAndExit };
