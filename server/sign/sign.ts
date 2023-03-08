@@ -5,6 +5,7 @@ import {
   handleCreateSalt,
   handleCreateSha512,
   handleRSADecrypt,
+  publicKey,
   privateKey
 } from '../../modules/crypto';
 import { handleSql } from '../../modules/oracleSetting';
@@ -14,13 +15,26 @@ import { SELECT_USER } from '../../queries/select';
 export const sign: Router = Router();
 
 sign.get('/', function (req: Request, res: Response): void {
-  res.send({ key: 'hello' });
+  res.send({ key: publicKey });
 });
 
-sign.post('/', function (req: Request, res: Response): void {
-  console.log('body: ', req.body);
-  res.send({ key: 'hello' });
-});
+sign.post(
+  '/',
+  function (req: Request, res: Response, next: NextFunction): void {
+    const data = req.body.data;
+    console.log('data: ', data);
+
+    let decrypted;
+    try {
+      decrypted = handleRSADecrypt(data, privateKey);
+      console.log('decrypted: ', decrypted);
+    } catch (e: any) {
+      handleCatchClause('N', e, e.message, next);
+    }
+
+    res.send({ decrypted });
+  }
+);
 
 /**
  * 회원가입
