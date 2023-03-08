@@ -1,13 +1,6 @@
 // 라이브러리 임포트
 import moment from 'moment-timezone';
-import cookieParser from 'cookie-parser';
-import express, {
-  Express,
-  Router,
-  Request,
-  Response,
-  NextFunction
-} from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 // 모듈 임포트
 import { handleSql } from './oracleSetting';
@@ -62,37 +55,7 @@ function handleGetLocaleTime(type: string = 'date'): string {
   else return moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
 }
 
-// body parser 및 cookie parser 세팅 함수
-function handleSetParser(app: Express | Router): void {
-  app.use(cookieParser(process.env.cookieKey)); // cookieParser(secretKey, optionObj)
-  app.use(express.urlencoded({ extended: true })); // content-type이 application/x-www-form-urlencoded일 경우 파싱
-  app.use(express.json()); // content-type이 application/json일 경우 파싱
-}
-
-function handleSetMiddleware(app: Express | Router): void {
-  app.use(function (req: Request, res: Response, next: NextFunction) {
-    console.log('req: reqreqreq');
-    console.log('res: resresres');
-    next();
-  });
-}
-
-// error middleware 설정
-function handleErrorMiddleware(app: Express | Router): void {
-  app.use(function (
-    err: Error,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): express.Response<any, Record<string, any>> | undefined {
-    console.error(err);
-
-    if (req.originalUrl.includes('/server')) {
-      return res.json({ error: 'Error Occur!' });
-    } else return;
-  });
-}
-
+// catch 절 함수
 function handleCatchClause(
   origin: string | undefined,
   e: any,
@@ -103,16 +66,9 @@ function handleCatchClause(
     console.error(e);
     throw new Error(message);
   } else {
-    console.error(e);
-    return next && next(new Error(e.message));
+    next && next(new Error(e.message));
+    throw new Error(e);
   }
 }
 
-export {
-  handleCheckTodayVisit,
-  handleGetLocaleTime,
-  handleSetParser,
-  handleSetMiddleware,
-  handleErrorMiddleware,
-  handleCatchClause
-};
+export { handleCheckTodayVisit, handleGetLocaleTime, handleCatchClause };

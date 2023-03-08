@@ -41,6 +41,13 @@ sign.post(
     if (length > 0) {
       res.send({ result: '이미 있는 유저다.' });
     } else {
+      let decrypted: string = '';
+      try {
+        decrypted = handleRSADecrypt(req.body.password, privateKey);
+      } catch (e: any) {
+        handleCatchClause('N', e, e.message, next);
+      }
+
       let salt: string = '';
       try {
         salt = handleCreateSalt();
@@ -50,12 +57,7 @@ sign.post(
 
       let password: string = '';
       try {
-        password =
-          salt &&
-          handleCreateSha512(
-            handleRSADecrypt(req.body.password, privateKey),
-            salt
-          );
+        password = salt && handleCreateSha512(decrypted, salt);
       } catch (e: any) {
         handleCatchClause('N', e, e.message, next);
       }
@@ -70,11 +72,11 @@ sign.post(
             auth: 30,
             createdt: handleGetLocaleTime('db')
           }));
-
-        res.send({ result: 'ok' });
       } catch (e: any) {
         handleCatchClause('N', e, e.message, next);
       }
+
+      res.send({ result: 'ok' });
     }
   }
 );

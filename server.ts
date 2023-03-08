@@ -8,12 +8,13 @@ import cors from 'cors';
 dotenv.config();
 
 // 모듈 임포트
+import { handleCheckTodayVisit, handleCatchClause } from './modules/common';
 import {
-  handleCheckTodayVisit,
   handleSetParser,
   handleErrorMiddleware,
-  handleCatchClause
-} from './modules/common';
+  handleResponseLogginMiddleware,
+  handleRequestLogginMiddleware
+} from './modules/middleware';
 import { handleStartCrons } from './modules/cron';
 import { handleProcess } from './modules/process';
 import { logger } from './config/winston';
@@ -28,6 +29,8 @@ handleProcess();
 handleStartCrons();
 
 handleSetParser(app);
+handleRequestLogginMiddleware(app);
+handleResponseLogginMiddleware(app);
 app.use(cors()); // cors 설정
 app.use('/server', server); // 라우터들 사용
 app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
