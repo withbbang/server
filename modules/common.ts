@@ -86,9 +86,12 @@ function handleErrorMiddleware(app: Express | Router): void {
     req: Request,
     res: Response,
     next: NextFunction
-  ): express.Response<any, Record<string, any>> {
+  ): express.Response<any, Record<string, any>> | undefined {
     console.error(err);
-    return res.json({ error: 'Error Occur!' });
+
+    if (req.originalUrl.includes('/server')) {
+      return res.json({ error: 'Error Occur!' });
+    } else return;
   });
 }
 

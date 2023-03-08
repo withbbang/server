@@ -48,15 +48,28 @@ app.get(
   }
 );
 
-handleErrorMiddleware(app);
-
 // 정적 소스 라우팅은 react build 파일에 일임한다는 뜻. 무조건 마지막에 처리해야 모든 url 요청에서 받을 수 있음
-app.get('*', function (req: Request, res: Response, next: NextFunction): void {
-  // logger.info('GET /');
-  // logger.error('Error message');
-  handleCheckTodayVisit(req, res, next);
-  res.sendFile(path.join(__dirname, 'views', 'index.html'));
-});
+app.get(
+  '*',
+  async function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    // logger.info('GET /');
+    // logger.error('Error message');
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
+
+    try {
+      await handleCheckTodayVisit(req, res, next);
+    } catch (err: any) {
+      console.error(err);
+      next(new Error(err.message));
+    }
+  }
+);
+
+handleErrorMiddleware(app);
 
 app.listen(PORT, function (): void {
   console.log(`server is running on ${PORT}...`);

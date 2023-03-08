@@ -40,6 +40,7 @@ async function handleCreateConnectionPool(): Promise<void> {
 async function handleGetConnection(): Promise<oracledb.Connection> {
   try {
     const connection: oracledb.Connection = await oracledb.getConnection();
+    // throw new Error('test');
     // console.log('Connection acquired.');
     return connection;
   } catch (e) {
