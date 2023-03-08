@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 
-import { handleGetLocaleTime } from '../../modules/common';
+import { handleCatchClause, handleGetLocaleTime } from '../../modules/common';
 import {
   handleCreateSalt,
   handleCreateSha512,
@@ -34,46 +34,46 @@ sign.post(
     try {
       const user = await handleSql(SELECT_USER, { id: req.body.id });
       length = user.length;
-    } catch (e) {
-      console.error(e);
-      return next(new Error('Finding user'));
+    } catch (e: any) {
+      handleCatchClause('N', e, e.message, next);
     }
 
     if (length > 0) {
       res.send({ result: '이미 있는 유저다.' });
     } else {
-      let salt: string;
+      let salt: string = '';
       try {
         salt = handleCreateSalt();
-      } catch (e) {
-        console.error(e);
-        return next(new Error('Creating salt'));
+      } catch (e: any) {
+        handleCatchClause('N', e, e.message, next);
       }
 
-      let password: string;
+      let password: string = '';
       try {
-        password = handleCreateSha512(
-          handleRSADecrypt(req.body.password, privateKey),
-          salt
-        );
-      } catch (e) {
-        console.error(e);
-        return next(new Error('Creating sha512 password'));
+        password =
+          salt &&
+          handleCreateSha512(
+            handleRSADecrypt(req.body.password, privateKey),
+            salt
+          );
+      } catch (e: any) {
+        handleCatchClause('N', e, e.message, next);
       }
 
       try {
-        await handleSql(INSERT_USER, {
-          id: req.body.id,
-          password,
-          salt,
-          auth: 30,
-          createdt: handleGetLocaleTime('db')
-        });
+        password &&
+          salt &&
+          (await handleSql(INSERT_USER, {
+            id: req.body.id,
+            password,
+            salt,
+            auth: 30,
+            createdt: handleGetLocaleTime('db')
+          }));
 
         res.send({ result: 'ok' });
-      } catch (e) {
-        console.error(e);
-        return next(new Error('Inserting user'));
+      } catch (e: any) {
+        handleCatchClause('N', e, e.message, next);
       }
     }
   }
@@ -86,9 +86,8 @@ sign.post(
 
     try {
       user = await handleSql(SELECT_USER, { id: req.body.id });
-    } catch (e) {
-      console.error(e);
-      return next(new Error('Finding user'));
+    } catch (e: any) {
+      handleCatchClause('N', e, e.message, next);
     }
 
     if (user.length > 0) {

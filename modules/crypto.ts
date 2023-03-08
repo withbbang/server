@@ -1,4 +1,5 @@
 import crypto, { generateKeyPairSync } from 'crypto';
+import { handleCatchClause } from './common';
 
 // 개인키, 공개키 key pair 생성
 const { publicKey, privateKey }: crypto.KeyPairSyncResult<string, string> =
@@ -37,8 +38,7 @@ function handleRSADecrypt(
       Buffer.from(encryptedMessage, 'base64')
     );
   } catch (e) {
-    console.error(e);
-    throw new Error('Decrypting password');
+    handleCatchClause('Y', e, 'Decrypting password');
   }
 
   return decryptedMessage.toString('utf-8');
@@ -51,8 +51,7 @@ function handleCreateSalt(): string {
   try {
     randomBytes = crypto.randomBytes(16);
   } catch (e) {
-    console.error(e);
-    throw new Error('Creating salt');
+    handleCatchClause('Y', e, 'Creating salt');
   }
 
   return randomBytes.toString('hex');
@@ -65,8 +64,7 @@ function handleCreateSha512(password: string, salt: string): string {
   try {
     sha512 = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512');
   } catch (e) {
-    console.error(e);
-    throw new Error('Creating sha512 password');
+    handleCatchClause('Y', e, 'Creating sha512 password');
   }
 
   return sha512.toString('hex');

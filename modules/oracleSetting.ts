@@ -1,4 +1,5 @@
 import oracledb from 'oracledb';
+import { handleCatchClause } from './common';
 
 (async function (): Promise<void> {
   handleInitOracleClient();
@@ -11,8 +12,7 @@ function handleInitOracleClient(): void {
     oracledb.initOracleClient({ libDir: process.env.libDir });
     // console.log('Initiate oracle client');
   } catch (e) {
-    console.error(e);
-    throw new Error('Initiating oracle client');
+    handleCatchClause('Y', e, 'Initiating oracle client');
   }
 }
 
@@ -31,21 +31,19 @@ async function handleCreateConnectionPool(): Promise<void> {
     });
     // console.log('Pool created.');
   } catch (e) {
-    console.error(e);
-    throw new Error('Creating pool');
+    handleCatchClause('Y', e, 'Creating pool');
   }
 }
 
 // connection 가져오기
-async function handleGetConnection(): Promise<oracledb.Connection> {
+async function handleGetConnection(): Promise<oracledb.Connection | undefined> {
+  // throw new Error('test');
   try {
     const connection: oracledb.Connection = await oracledb.getConnection();
-    // throw new Error('test');
     // console.log('Connection acquired.');
     return connection;
   } catch (e) {
-    console.error(e);
-    throw new Error('Getting connection');
+    handleCatchClause('Y', e, 'Getting connection');
   }
 }
 
@@ -54,13 +52,12 @@ async function handleSql(
   query: string,
   params: undefined | any = undefined
 ): Promise<any> {
-  let connection: oracledb.Connection | null = null;
+  let connection: oracledb.Connection | null | undefined = null;
 
   try {
     connection = await handleGetConnection();
   } catch (e) {
-    console.error(e);
-    throw new Error('Getting connection');
+    handleCatchClause('Y', e, 'Getting connection');
   }
 
   let binds = params ? { ...params } : {}; // 동적 쿼리 파라미터인듯
@@ -81,8 +78,7 @@ async function handleSql(
   try {
     result = connection && (await connection.execute(query, binds, options));
   } catch (e) {
-    console.error(e);
-    throw new Error('Excutting sql');
+    handleCatchClause('Y', e, 'Excutting sql');
   } finally {
     await handleReleaseConnection(connection);
   }
@@ -95,14 +91,13 @@ async function handleSql(
 
 // connection pool 환원하기
 async function handleReleaseConnection(
-  connection: oracledb.Connection
+  connection: oracledb.Connection | null | undefined
 ): Promise<void> {
   try {
-    await connection.release();
+    await connection?.release();
     // console.log('Connection released.');
   } catch (e) {
-    console.error(e);
-    throw new Error('Releasing connection');
+    handleCatchClause('Y', e, 'Releasing connection');
   }
 }
 
@@ -114,8 +109,7 @@ async function handleClosePoolAndExit(): Promise<void> {
     await oracledb.getPool().close();
     console.log('Pool closed.');
   } catch (e) {
-    console.error(e);
-    throw new Error('Closing pool');
+    handleCatchClause('Y', e, 'Closing pool');
   }
 }
 

@@ -11,7 +11,8 @@ dotenv.config();
 import {
   handleCheckTodayVisit,
   handleSetParser,
-  handleErrorMiddleware
+  handleErrorMiddleware,
+  handleCatchClause
 } from './modules/common';
 import { handleStartCrons } from './modules/cron';
 import { handleProcess } from './modules/process';
@@ -42,10 +43,8 @@ app.get(
     try {
       await handleCheckTodayVisit(req, res, next);
       res.json({ error: 'Not Error Occur!' });
-    } catch (err: any) {
-      console.error(err);
-      next(new Error(err.message));
-      return;
+    } catch (e: any) {
+      handleCatchClause('N', e, e.message, next);
     }
   }
 );
@@ -64,9 +63,8 @@ app.get(
 
     try {
       await handleCheckTodayVisit(req, res, next);
-    } catch (err: any) {
-      console.error(err);
-      next(new Error(err.message));
+    } catch (e: any) {
+      handleCatchClause('N', e, e.message, next);
     }
   }
 );

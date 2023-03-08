@@ -39,18 +39,16 @@ async function handleCheckTodayVisit(
 
     try {
       visitor = await handleSql(SELECT_VISITOR_IP, { ip });
-    } catch (e) {
-      console.error(e);
-      throw new Error('Excutting sql');
+    } catch (e: any) {
+      handleCatchClause('Y', e, e.message, next);
     }
 
     if (visitor?.length === 0) {
       try {
         handleSql(INSERT_TODAY_VISITOR_IP, { ip });
         handleSql(UPDATE_INCREMENT_VISITHISTORY);
-      } catch (e) {
-        console.error(e);
-        throw new Error('Excutting sql');
+      } catch (e: any) {
+        handleCatchClause('Y', e, e.message, next);
       }
     }
   }
@@ -79,7 +77,7 @@ function handleSetMiddleware(app: Express | Router): void {
   });
 }
 
-// middleware 설정
+// error middleware 설정
 function handleErrorMiddleware(app: Express | Router): void {
   app.use(function (
     err: Error,
@@ -95,10 +93,26 @@ function handleErrorMiddleware(app: Express | Router): void {
   });
 }
 
+function handleCatchClause(
+  origin: string | undefined,
+  e: any,
+  message: string | undefined,
+  next: NextFunction | undefined = undefined
+): void {
+  if (origin === 'Y') {
+    console.error(e);
+    throw new Error(message);
+  } else {
+    console.error(e);
+    return next && next(new Error(e.message));
+  }
+}
+
 export {
   handleCheckTodayVisit,
   handleGetLocaleTime,
   handleSetParser,
   handleSetMiddleware,
-  handleErrorMiddleware
+  handleErrorMiddleware,
+  handleCatchClause
 };
