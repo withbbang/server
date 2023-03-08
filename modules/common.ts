@@ -19,7 +19,8 @@ import { UPDATE_INCREMENT_VISITHISTORY } from '../queries/update';
 // 금일 방문 여부 체크
 async function handleCheckTodayVisit(
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<any> {
   if (req.originalUrl.includes('/server')) {
     return;
@@ -33,11 +34,24 @@ async function handleCheckTodayVisit(
 
     const ip: string | string[] | undefined =
       req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-    const visitor = await handleSql(SELECT_VISITOR_IP, { ip });
+
+    let visitor = null;
+
+    try {
+      visitor = await handleSql(SELECT_VISITOR_IP, { ip });
+    } catch (e) {
+      console.error(e);
+      throw new Error('Excutting sql');
+    }
 
     if (visitor?.length === 0) {
-      handleSql(INSERT_TODAY_VISITOR_IP, { ip });
-      handleSql(UPDATE_INCREMENT_VISITHISTORY);
+      try {
+        handleSql(INSERT_TODAY_VISITOR_IP, { ip });
+        handleSql(UPDATE_INCREMENT_VISITHISTORY);
+      } catch (e) {
+        console.error(e);
+        throw new Error('Excutting sql');
+      }
     }
   }
 }
@@ -57,7 +71,6 @@ function handleSetParser(app: Express | Router): void {
   app.use(express.json()); // content-type이 application/json일 경우 파싱
 }
 
-// middleware 설정
 function handleSetMiddleware(app: Express | Router): void {
   app.use(function (req: Request, res: Response, next: NextFunction) {
     console.log('req: reqreqreq');
@@ -66,9 +79,23 @@ function handleSetMiddleware(app: Express | Router): void {
   });
 }
 
+// middleware 설정
+function handleErrorMiddleware(app: Express | Router): void {
+  app.use(function (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): express.Response<any, Record<string, any>> {
+    console.error(err);
+    return res.json({ error: 'Error Occur!' });
+  });
+}
+
 export {
   handleCheckTodayVisit,
   handleGetLocaleTime,
   handleSetParser,
-  handleSetMiddleware
+  handleSetMiddleware,
+  handleErrorMiddleware
 };

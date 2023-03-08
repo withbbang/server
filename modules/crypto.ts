@@ -2,7 +2,7 @@ import crypto, { generateKeyPairSync } from 'crypto';
 
 // 개인키, 공개키 key pair 생성
 const { publicKey, privateKey }: crypto.KeyPairSyncResult<string, string> =
-  (function () {
+  (function (): crypto.KeyPairSyncResult<string, string> {
     return generateKeyPairSync('rsa', {
       modulusLength: 1024,
       publicKeyEncoding: {
@@ -44,8 +44,8 @@ function handleCreateSalt(): string {
   try {
     randomBytes = crypto.randomBytes(16);
   } catch (e) {
-    console.error('Error creating salt: ', e);
-    throw Error();
+    console.error(e);
+    throw new Error('Creating salt');
   }
 
   return randomBytes.toString('hex');
@@ -58,8 +58,8 @@ function handleCreateSha512(password: string, salt: string): string {
   try {
     sha512 = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512');
   } catch (e) {
-    console.error('Error creating sha512: ', e);
-    throw Error();
+    console.error(e);
+    throw new Error('Creating sha512 password');
   }
 
   return sha512.toString('hex');

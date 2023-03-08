@@ -8,13 +8,10 @@ import {
   privateKey
 } from '../../modules/crypto';
 import { handleSql } from '../../modules/oracleSetting';
-import { Users } from '../../modules/testUser';
 import { INSERT_USER } from '../../queries/insert';
 import { SELECT_USER } from '../../queries/select';
 
 export const sign: Router = Router();
-
-handleSetParser(sign);
 
 sign.get('/', function (req: Request, res: Response): void {
   res.send({ key: 'hello' });
