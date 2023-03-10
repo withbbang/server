@@ -5,10 +5,10 @@ import { USER } from '../types/USER';
 import { handleCatchClause } from './common';
 import { handleSql } from './oracleSetting';
 
-/* Token 생성 및 검증 key*/
+/* Token 생성 및 검증용 key */
 const jwtKey = 'breadkimismacho';
 
-/* AccessToken 생성 */
+/* AccessToken 생성함수 */
 function issueAccessToken(params: any): any {
   const payload = {
     id: params.id,
@@ -30,7 +30,7 @@ function issueAccessToken(params: any): any {
   return accessToken;
 }
 
-/* AccessToken 검증 */
+/* AccessToken 검증함수 */
 async function verifyAccessToken(
   req: Request,
   res: Response,
@@ -113,4 +113,11 @@ async function verifyRefreshToken(
   }
 
   /* 2. 요청 헤더에 토큰 존재 여부 확인 */
+}
+
+export {
+  issueAccessToken,
+  verifyAccessToken,
+  issueRefreshToken,
+  verifyRefreshToken
 }
