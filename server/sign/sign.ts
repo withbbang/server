@@ -15,7 +15,7 @@ import { SELECT_USER } from '../../queries/select';
 export const sign: Router = Router();
 
 sign.get('/', function (req: Request, res: Response): void {
-  res.send({ key: publicKey });
+  res.json({ publicKey });
 });
 
 sign.post(
@@ -59,7 +59,7 @@ sign.post(
     }
 
     if (length > 0) {
-      res.send({ result: '이미 있는 유저다.' });
+      res.send({ message: '이미 있는 유저다.' });
     } else {
       /* 2. 비밀번호 RSA 복호화 */
       let decrypted: string = '';
@@ -100,7 +100,7 @@ sign.post(
         handleCatchClause('N', e, e.message, next);
       }
 
-      res.send({ result: 'ok' });
+      res.json({ message: 'ok' });
     }
   }
 );
@@ -130,14 +130,14 @@ sign.post(
       );
       if (password === user[0].password) {
         //TODO: 토큰 생성
-        res.send({ result: '로그인 완료.' });
+        res.json({ message: '로그인 완료.' });
       } else {
         //TODO: 에러
-        res.send({ result: '비밀번호 틀림.' });
+        res.json({ message: '비밀번호 틀림.' });
       }
     } else {
       //TODO: 에러
-      res.send({ result: '없는 유저다.' });
+      res.json({ message: '없는 유저다.' });
     }
   }
 );

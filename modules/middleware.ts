@@ -47,7 +47,7 @@ function handleErrorMiddleware(app: Express | Router): void {
     console.error(err);
 
     if (req.originalUrl.includes('/server')) {
-      return res.json({ error: 'Error Occured!' });
+      return res.json({ message: 'Error Occured!' });
     } else {
       return;
     }
