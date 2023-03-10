@@ -19,6 +19,8 @@ const SELECT_USER = `
         ID
         , PASSWORD
         , SALT
+        , ACCESS_TOKEN
+        , REFRESH_TOKEN
     FROM
         USERS
     WHERE

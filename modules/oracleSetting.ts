@@ -37,7 +37,7 @@ async function handleCreateConnectionPool(): Promise<void> {
 
 // connection 가져오기
 async function handleGetConnection(): Promise<oracledb.Connection | undefined> {
-  // throw new Error('test');
+  throw new Error('test');
   try {
     const connection: oracledb.Connection = await oracledb.getConnection();
     // console.log('Connection acquired.');
