@@ -47,15 +47,9 @@ async function verifyAccessToken(
   }
 
   /* 2. 요청 헤더에 토큰 존재 여부 확인 */
-  let result: string | JwtPayload = '';
   let token: string = '';
   if (req.headers.authorization) {
-    try {
-      token = req.headers.authorization.split('Bearer ')[1];
-      result = jwt.verify(token, jwtKey);
-    } catch (e: any) {
-      handleCatchClause('N', e, 'Verifying access token', next);
-    }
+    token = req.headers.authorization.split('Bearer ')[1];
   } else {
     handleCatchClause(
       'N',
@@ -65,7 +59,15 @@ async function verifyAccessToken(
     );
   }
 
-  /* 3. AccessToken 일치 확인 */
+  /* 3. 토큰 검증 */
+  let result: string | JwtPayload = '';
+  try {
+    result = jwt.verify(token, jwtKey);
+  } catch (e: any) {
+    handleCatchClause('N', e, e.message, next);
+  }
+
+  /* 4. AccessToken 일치 확인 */
   if (accessToken !== token) {
     handleCatchClause(
       'N',
