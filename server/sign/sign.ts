@@ -12,6 +12,7 @@ import { issueAccessToken, issueRefreshToken } from '../../modules/jwt';
 import { handleSql } from '../../modules/oracleSetting';
 import { INSERT_USER } from '../../queries/insert';
 import { SELECT_USER } from '../../queries/select';
+import { UPDATE_USER_LOGIN } from '../../queries/update';
 import { User } from '../../types/User';
 
 export const sign: Router = Router();
@@ -116,9 +117,11 @@ sign.post(
   async function (req: Request, res: Response, next: NextFunction) {
     let user: null | User = null;
 
+    const id = req.body.id;
+
     /* 1. 회원 존재 여부 확인 */
     try {
-      user = await handleSql(SELECT_USER, { id: req.body.id });
+      user = await handleSql(SELECT_USER, { id });
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -126,24 +129,53 @@ sign.post(
     /* 2-1. 유저 존재 */
     if (user) {
       const salt: string = user.SALT;
-      const password: string = handleCreateSha512(
-        handleRSADecrypt(req.body.password, privateKey),
-        salt
-      );
 
-      /* 2-1-1. 비밀번호 일치 -> 토큰발행 */
+      /* 2-1-1. 비밀번호 복호화 */
+      let decrypted: string = '';
+      try {
+        decrypted = handleRSADecrypt(req.body.password, privateKey);
+      } catch (e: any) {
+        return next(new Error(e.stack));
+      }
+
+      /* 2-1-2. 비밀번호 hash화 */
+      let password: string = '';
+      try {
+        password = salt && handleCreateSha512(decrypted, salt);
+      } catch (e: any) {
+        return next(new Error(e.stack));
+      }
+
+      /* 2-1-3. 비밀번호 일치 -> 토큰발행 */
       if (password === user.PASSWORD) {
+        let accessToken = '';
+        let refreshToken = '';
         try {
-          res.setHeader(
-            'Authorization',
-            'Bearer ' + issueAccessToken(req.body.id, user.AUTH)
-          );
-          res.setHeader('Refresh', 'Bearer ' + issueRefreshToken());
+          accessToken = issueAccessToken(req.body.id, user.AUTH);
+          refreshToken = issueRefreshToken();
         } catch (e: any) {
           return next(new Error(e.stack));
         }
 
-        /* 2-1-2. 비밀번호 미일치 */
+        /* 2-1-4. 유저 로그인 갱신 */
+        try {
+          await handleSql(UPDATE_USER_LOGIN, {
+            accessToken,
+            refreshToken,
+            id,
+            salt,
+            password
+          });
+        } catch (e: any) {
+          return next(new Error(e.stack));
+        }
+
+        /* 2-1-5. 헤더설정 및 응답 */
+        res.setHeader('Authorization', 'Bearer ' + accessToken);
+        res.setHeader('Refresh', 'Bearer ' + refreshToken);
+        res.json({ message: 'Login success' });
+
+        /* 비밀번호 미일치 */
       } else {
         return res.json({ message: 'Wrong password.' });
       }

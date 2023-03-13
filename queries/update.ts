@@ -13,4 +13,20 @@ const UPDATE_INITIATE_TOTAY_VISITHISTORY = `
         TODAY = 0
 `;
 
-export { UPDATE_INCREMENT_VISITHISTORY, UPDATE_INITIATE_TOTAY_VISITHISTORY };
+const UPDATE_USER_LOGIN = `
+    UPDATE
+        USER
+    SET
+        ACCESS_TOKEN = :accessToken
+        , REFRESH_TOKEN = :refreshToken
+    WHERE
+        ID = :id
+        , SALT = :salt
+        , PASSWORD = :password
+`;
+
+export {
+  UPDATE_INCREMENT_VISITHISTORY,
+  UPDATE_INITIATE_TOTAY_VISITHISTORY,
+  UPDATE_USER_LOGIN
+};

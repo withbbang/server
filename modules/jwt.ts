@@ -43,15 +43,7 @@ async function verifyAccessToken(
     return res.json({ message: 'No authorization' });
   }
 
-  /* 2. 토큰 검증 */
-  let result: string | JwtPayload = '';
-  try {
-    result = jwt.verify(token, jwtKey);
-  } catch (e: any) {
-    return next(new Error(e.stack));
-  }
-
-  /* 3. 회원 존재 여부 확인 */
+  /* 2. 회원 존재 여부 확인 */
   let user: null | User = null;
   let accessToken: string | undefined = '';
   try {
@@ -61,9 +53,22 @@ async function verifyAccessToken(
     return next(new Error(e.stack));
   }
 
-  /* 4. AccessToken 일치 확인 */
+  /* 3. AccessToken 일치 확인 */
   if (accessToken !== token) {
     return res.json({ message: 'Unmatch access token' });
+  }
+
+  /* 4. 토큰 검증 */
+  let result: string | JwtPayload = '';
+  try {
+    result = jwt.verify(token, jwtKey);
+  } catch (e: any) {
+    if (e.name === 'TokenExpiredError') {
+      req.body.requiredRefresh = 'Y';
+      return next();
+    } else {
+      return next(new Error(e.stack));
+    }
   }
 
   return next();
