@@ -8,10 +8,10 @@ import { handleSql } from './oracleSetting';
 const jwtKey = 'breadkimismacho';
 
 /* AccessToken 생성함수 */
-function issueAccessToken(params: any): any {
+function issueAccessToken(id: string, auth: number): string {
   const payload = {
-    id: params.id,
-    auth: params.auth
+    id,
+    auth
   };
 
   let accessToken = '';
@@ -70,7 +70,7 @@ async function verifyAccessToken(
 }
 
 /* RefreshToken 생성 */
-function issueRefreshToken(): any {
+function issueRefreshToken(): string {
   let refreshToken = '';
 
   try {

@@ -8,9 +8,11 @@ import {
   publicKey,
   privateKey
 } from '../../modules/crypto';
+import { issueAccessToken, issueRefreshToken } from '../../modules/jwt';
 import { handleSql } from '../../modules/oracleSetting';
 import { INSERT_USER } from '../../queries/insert';
 import { SELECT_USER } from '../../queries/select';
+import { User } from '../../types/User';
 
 export const sign: Router = Router();
 
@@ -48,17 +50,16 @@ sign.post(
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    let length: number = 0;
+    let user: null | User = null;
 
     /* 1. 회원 존재 여부 확인 */
     try {
-      const user = await handleSql(SELECT_USER, { id: req.body.id });
-      length = user.length;
+      user = await handleSql(SELECT_USER, { id: req.body.id });
     } catch (e: any) {
       return next(new Error(e.stack));
     }
 
-    if (length > 0) {
+    if (user) {
       res.send({ message: '이미 있는 유저다.' });
     } else {
       /* 2. 비밀번호 RSA 복호화 */
@@ -113,7 +114,7 @@ sign.post(
 sign.post(
   '/in',
   async function (req: Request, res: Response, next: NextFunction) {
-    let user = null;
+    let user: null | User = null;
 
     /* 1. 회원 존재 여부 확인 */
     try {
@@ -122,21 +123,33 @@ sign.post(
       return next(new Error(e.stack));
     }
 
-    if (user.length > 0) {
-      const salt: string = user[0].salt;
+    /* 2-1. 유저 존재 */
+    if (user) {
+      const salt: string = user.SALT;
       const password: string = handleCreateSha512(
         handleRSADecrypt(req.body.password, privateKey),
         salt
       );
-      if (password === user[0].password) {
-        //TODO: 토큰 생성
-        return res.json({ message: '로그인 완료.' });
+
+      /* 2-1-1. 비밀번호 일치 -> 토큰발행 */
+      if (password === user.PASSWORD) {
+        try {
+          res.setHeader(
+            'Authorization',
+            'Bearer ' + issueAccessToken(req.body.id, user.AUTH)
+          );
+          res.setHeader('Refresh', 'Bearer ' + issueRefreshToken());
+        } catch (e: any) {
+          return next(new Error(e.stack));
+        }
+
+        /* 2-1-2. 비밀번호 미일치 */
       } else {
-        //TODO: 에러
-        return res.json({ message: '비밀번호 틀림.' });
+        return res.json({ message: 'Wrong password.' });
       }
+
+      /* 2-2. 유저 미존재 */
     } else {
-      //TODO: 에러
       return res.json({ message: '없는 유저다.' });
     }
   }
