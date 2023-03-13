@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { SELECT_USER } from '../queries/select';
+import { UPDATE_USER_ACCESS_TOKEN } from '../queries/update';
 import { User } from '../types/User';
 import { handleSql } from './oracleSetting';
 
@@ -159,6 +160,13 @@ async function verifyRefreshToken(
   let accessToken = '';
   try {
     accessToken = issueAccessToken(id, user.AUTH);
+  } catch (e: any) {
+    return next(new Error(e.stack));
+  }
+
+  /* 8. 유저 AccessToken DB 업데이트 */
+  try {
+    await handleSql(UPDATE_USER_ACCESS_TOKEN, { id });
   } catch (e: any) {
     return next(new Error(e.stack));
   }

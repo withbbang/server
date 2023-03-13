@@ -25,8 +25,18 @@ const UPDATE_USER_LOGIN = `
         , PASSWORD = :password
 `;
 
+const UPDATE_USER_ACCESS_TOKEN = `
+    UPDATE
+        USER
+    SET
+        ACCESS_TOKEN = :accessToken
+    WHERE
+        ID = :id
+`;
+
 export {
   UPDATE_INCREMENT_VISITHISTORY,
   UPDATE_INITIATE_TOTAY_VISITHISTORY,
-  UPDATE_USER_LOGIN
+  UPDATE_USER_LOGIN,
+  UPDATE_USER_ACCESS_TOKEN
 };

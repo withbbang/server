@@ -18,7 +18,7 @@ import {
 import { handleStartCrons } from './modules/cron';
 import { handleProcess } from './modules/process';
 import { logger } from './config/winston';
-import { verifyAccessToken } from './modules/jwt';
+import { verifyAccessToken, verifyRefreshToken } from './modules/jwt';
 
 // 라우터 임포트
 import { server } from './server/server';
@@ -33,7 +33,7 @@ handleSetParser(app);
 handleRequestLogginMiddleware(app);
 handleResponseLogginMiddleware(app);
 app.use(cors()); // cors 설정
-app.use('/server', verifyAccessToken, server); // 라우터들 사용
+app.use('/server', verifyAccessToken, verifyRefreshToken, server); // 라우터들 사용
 app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
 
 // 데이터 요청 api는 정적 소스 라우팅보다 우선 선언해야함
