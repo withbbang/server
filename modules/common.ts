@@ -32,8 +32,7 @@ async function handleCheckTodayVisit(
     try {
       visitor = await handleSql(SELECT_VISITOR_IP, { ip });
     } catch (e: any) {
-      console.error(e);
-      throw new Error(e);
+      throw new Error(e.stack);
     }
 
     if (visitor?.length === 0) {
@@ -41,8 +40,7 @@ async function handleCheckTodayVisit(
         handleSql(INSERT_TODAY_VISITOR_IP, { ip });
         handleSql(UPDATE_INCREMENT_VISITHISTORY);
       } catch (e: any) {
-        console.error(e);
-        throw new Error(e);
+        throw new Error(e.stack);
       }
     }
   }
@@ -61,9 +59,8 @@ function handleCatchClause(
   e: any,
   next: NextFunction | undefined = undefined
 ): void {
-  // console.error(e);
   next && next(new Error(e.message));
-  throw new Error(e);
+  throw new Error(e.stack);
 }
 
 export { handleCheckTodayVisit, handleGetLocaleTime };

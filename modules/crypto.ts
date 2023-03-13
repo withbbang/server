@@ -37,8 +37,7 @@ function handleRSADecrypt(
       Buffer.from(encryptedMessage, 'base64')
     );
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 
   return decryptedMessage.toString('utf-8');
@@ -51,8 +50,7 @@ function handleCreateSalt(): string {
   try {
     randomBytes = crypto.randomBytes(16);
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 
   return randomBytes.toString('hex');
@@ -65,8 +63,7 @@ function handleCreateSha512(password: string, salt: string): string {
   try {
     sha512 = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512');
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 
   return sha512.toString('hex');

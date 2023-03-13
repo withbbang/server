@@ -23,8 +23,7 @@ function issueAccessToken(params: any): any {
       algorithm: 'HS512'
     });
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 
   return accessToken;
@@ -49,8 +48,7 @@ async function verifyAccessToken(
   try {
     result = jwt.verify(token, jwtKey);
   } catch (e: any) {
-    console.error(e);
-    return next(e);
+    return next(new Error(e.stack));
   }
 
   /* 3. 회원 존재 여부 확인 */
@@ -60,7 +58,7 @@ async function verifyAccessToken(
     user = await handleSql(SELECT_USER, { id: req.body.id });
     accessToken = user?.ACCESS_TOKEN;
   } catch (e: any) {
-    return next(e);
+    return next(new Error(e.stack));
   }
 
   /* 4. AccessToken 일치 확인 */
@@ -81,8 +79,7 @@ function issueRefreshToken(): any {
       algorithm: 'HS512'
     });
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 
   return refreshToken;
@@ -103,7 +100,7 @@ async function verifyRefreshToken(
     accessToken = user?.ACCESS_TOKEN;
     refreshToken = user?.REFRESH_TOKEN;
   } catch (e: any) {
-    return next(e);
+    return next(new Error(e.stack));
   }
 
   /* 2. 요청 헤더에 토큰 존재 여부 확인 */

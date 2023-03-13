@@ -11,8 +11,7 @@ function handleInitOracleClient(): void {
     oracledb.initOracleClient({ libDir: process.env.libDir });
     // console.log('Initiate oracle client');
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 }
 
@@ -31,21 +30,19 @@ async function handleCreateConnectionPool(): Promise<void> {
     });
     // console.log('Pool created.');
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 }
 
 // connection 가져오기
 async function handleGetConnection(): Promise<oracledb.Connection | undefined> {
-  throw new Error('test');
+  // throw new Error('test');
   try {
     const connection: oracledb.Connection = await oracledb.getConnection();
     // console.log('Connection acquired.');
     return connection;
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 }
 
@@ -59,8 +56,7 @@ async function handleSql(
   try {
     connection = await handleGetConnection();
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 
   let binds = params ? { ...params } : {}; // 동적 쿼리 파라미터인듯
@@ -81,8 +77,7 @@ async function handleSql(
   try {
     result = connection && (await connection.execute(query, binds, options));
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   } finally {
     await handleReleaseConnection(connection);
   }
@@ -101,8 +96,7 @@ async function handleReleaseConnection(
     await connection?.release();
     // console.log('Connection released.');
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 }
 
@@ -114,8 +108,7 @@ async function handleClosePoolAndExit(): Promise<void> {
     await oracledb.getPool().close();
     console.log('Pool closed.');
   } catch (e: any) {
-    console.error(e);
-    throw new Error(e);
+    throw new Error(e.stack);
   }
 }
 

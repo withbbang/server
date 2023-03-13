@@ -48,7 +48,7 @@ app.get(
       await handleCheckTodayVisit(req, res);
       res.json({ error: 'Not Error Occur!' });
     } catch (e: any) {
-      next(e);
+      return next(new Error(e.stack));
     }
   }
 );
@@ -71,7 +71,7 @@ app.get(
     try {
       await handleCheckTodayVisit(req, res);
     } catch (e: any) {
-      next(e);
+      return next(new Error(e.stack));
     }
   }
 );
