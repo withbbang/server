@@ -1,4 +1,4 @@
-export interface USER {
+export interface User {
   ID: string;
   PASSWORD: string;
   SALT: string;
