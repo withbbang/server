@@ -151,7 +151,7 @@ sign.post(
         let accessToken = '';
         let refreshToken = '';
         try {
-          accessToken = issueAccessToken(req.body.id, user.AUTH);
+          accessToken = issueAccessToken(id, user.AUTH);
           refreshToken = issueRefreshToken();
         } catch (e: any) {
           return next(new Error(e.stack));
@@ -175,12 +175,12 @@ sign.post(
         res.setHeader('Refresh', 'Bearer ' + refreshToken);
         res.json({ message: 'Login success' });
 
-        /* 비밀번호 미일치 */
+        /* 2-2. 비밀번호 미일치 */
       } else {
         return res.json({ message: 'Wrong password.' });
       }
 
-      /* 2-2. 유저 미존재 */
+      /* 3. 유저 미존재 */
     } else {
       return res.json({ message: '없는 유저다.' });
     }

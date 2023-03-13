@@ -45,17 +45,24 @@ async function verifyAccessToken(
 
   /* 2. 회원 존재 여부 확인 */
   let user: null | User = null;
-  let accessToken: string | undefined = '';
   try {
     user = await handleSql(SELECT_USER, { id: req.body.id });
-    accessToken = user?.ACCESS_TOKEN;
   } catch (e: any) {
     return next(new Error(e.stack));
   }
 
-  /* 3. AccessToken 일치 확인 */
-  if (accessToken !== token) {
-    return res.json({ message: 'Unmatch access token' });
+  let accessToken: string | undefined = '';
+  if (user) {
+    /* 3. 유저 존재 */
+    accessToken = user.ACCESS_TOKEN;
+
+    /* 3-1. AccessToken 일치 확인 */
+    if (accessToken !== token) {
+      return res.json({ message: 'Unmatch access token' });
+    }
+  } else {
+    /* 4. 유저 미존재 */
+    return res.json({ message: 'No user' });
   }
 
   /* 4. 토큰 검증 */
@@ -64,9 +71,11 @@ async function verifyAccessToken(
     result = jwt.verify(token, jwtKey);
   } catch (e: any) {
     if (e.name === 'TokenExpiredError') {
+      /* 4-1. 토큰 만료시 재발급 */
       req.body.requiredRefresh = 'Y';
       return next();
     } else {
+      /* 4-2. 다른 에러일 경우 넘기기 */
       return next(new Error(e.stack));
     }
   }
@@ -96,19 +105,66 @@ async function verifyRefreshToken(
   res: Response,
   next: NextFunction
 ): Promise<any> {
-  /* 1. 회원 존재 여부 확인 */
+  /* 1. access token 만료일 경우에만 로직 태우기 */
+  if (req.body.requiredRefresh !== 'Y') {
+    return next();
+  }
+
+  /* 2. 요청 헤더에 토큰 존재 여부 확인 */
+  let token: string = '';
+  let refresh = req.headers.Refresh as string | undefined;
+  if (refresh) {
+    token = refresh.split('Bearer ')[1];
+  } else {
+    return res.json({ message: 'No Refresh' });
+  }
+
+  const id = req.body.id;
+
+  /* 3. 회원 존재 여부 확인 */
   let user: null | User = null;
-  let accessToken: string | undefined = '';
-  let refreshToken: string | undefined = '';
   try {
-    user = await handleSql(SELECT_USER, { id: req.body.id });
-    accessToken = user?.ACCESS_TOKEN;
-    refreshToken = user?.REFRESH_TOKEN;
+    user = await handleSql(SELECT_USER, { id });
   } catch (e: any) {
     return next(new Error(e.stack));
   }
 
-  /* 2. 요청 헤더에 토큰 존재 여부 확인 */
+  let refreshToken: string | undefined = '';
+  if (user) {
+    /* 4. 유저 존재 */
+    refreshToken = user.REFRESH_TOKEN;
+
+    /* 4-1. RefreshToken 일치 확인 */
+    if (refreshToken !== token) {
+      return res.json({ message: 'Unmatch refresh token' });
+    }
+  } else {
+    /* 5. 유저 미존재 */
+    return res.json({ message: 'No user' });
+  }
+
+  /* 6. 토큰 검증 */
+  let result: string | JwtPayload = '';
+  try {
+    result = jwt.verify(token, jwtKey);
+  } catch (e: any) {
+    if (e.name === 'TokenExpiredError') {
+      return res.json({ message: '재로그인 필요' });
+    } else {
+      return next(new Error(e.stack));
+    }
+  }
+
+  /* 7. AccessToken 재발급 */
+  let accessToken = '';
+  try {
+    accessToken = issueAccessToken(id, user.AUTH);
+  } catch (e: any) {
+    return next(new Error(e.stack));
+  }
+
+  res.setHeader('Authorization', 'Bearer ' + accessToken);
+  return next();
 }
 
 export {
