@@ -29,7 +29,7 @@ sign.post(
       decrypted = handleRSADecrypt(data, privateKey);
       console.log('decrypted: ', decrypted);
     } catch (e: any) {
-      handleCatchClause('N', e, e.message, next);
+      handleCatchClause(e, next);
     }
 
     res.send({ decrypted });
@@ -55,7 +55,7 @@ sign.post(
       const user = await handleSql(SELECT_USER, { id: req.body.id });
       length = user.length;
     } catch (e: any) {
-      handleCatchClause('N', e, e.message, next);
+      handleCatchClause(e, next);
     }
 
     if (length > 0) {
@@ -66,7 +66,7 @@ sign.post(
       try {
         decrypted = handleRSADecrypt(req.body.password, privateKey);
       } catch (e: any) {
-        handleCatchClause('N', e, e.message, next);
+        handleCatchClause(e, next);
       }
 
       /* 3. salt 생성 */
@@ -74,7 +74,7 @@ sign.post(
       try {
         salt = handleCreateSalt();
       } catch (e: any) {
-        handleCatchClause('N', e, e.message, next);
+        handleCatchClause(e, next);
       }
 
       /* 4. 비밀번호 해쉬화 */
@@ -82,7 +82,7 @@ sign.post(
       try {
         password = salt && handleCreateSha512(decrypted, salt);
       } catch (e: any) {
-        handleCatchClause('N', e, e.message, next);
+        handleCatchClause(e, next);
       }
 
       /* 5. 회원 추가 */
@@ -97,7 +97,7 @@ sign.post(
             createdt: handleGetLocaleTime('db')
           }));
       } catch (e: any) {
-        handleCatchClause('N', e, e.message, next);
+        handleCatchClause(e, next);
       }
 
       res.json({ message: 'ok' });
@@ -119,7 +119,7 @@ sign.post(
     try {
       user = await handleSql(SELECT_USER, { id: req.body.id });
     } catch (e: any) {
-      handleCatchClause('N', e, e.message, next);
+      handleCatchClause(e, next);
     }
 
     if (user.length > 0) {

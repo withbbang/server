@@ -44,10 +44,10 @@ app.get(
     next: NextFunction
   ): Promise<any> {
     try {
-      await handleCheckTodayVisit(req, res, next);
+      await handleCheckTodayVisit(req, res);
       res.json({ error: 'Not Error Occur!' });
     } catch (e: any) {
-      handleCatchClause('N', e, e.message, next);
+      handleCatchClause(e, next);
     }
   }
 );
@@ -68,9 +68,9 @@ app.get(
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 
     try {
-      await handleCheckTodayVisit(req, res, next);
+      await handleCheckTodayVisit(req, res);
     } catch (e: any) {
-      handleCatchClause('N', e, e.message, next);
+      handleCatchClause(e, next);
     }
   }
 );

@@ -12,8 +12,7 @@ import { UPDATE_INCREMENT_VISITHISTORY } from '../queries/update';
 // 금일 방문 여부 체크
 async function handleCheckTodayVisit(
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): Promise<any> {
   if (req.originalUrl.includes('/server')) {
     return;
@@ -33,7 +32,7 @@ async function handleCheckTodayVisit(
     try {
       visitor = await handleSql(SELECT_VISITOR_IP, { ip });
     } catch (e: any) {
-      handleCatchClause('Y', e, e.message, next);
+      handleCatchClause(e);
     }
 
     if (visitor?.length === 0) {
@@ -41,7 +40,7 @@ async function handleCheckTodayVisit(
         handleSql(INSERT_TODAY_VISITOR_IP, { ip });
         handleSql(UPDATE_INCREMENT_VISITHISTORY);
       } catch (e: any) {
-        handleCatchClause('Y', e, e.message, next);
+        handleCatchClause(e);
       }
     }
   }
@@ -57,18 +56,12 @@ function handleGetLocaleTime(type: string = 'date'): string {
 
 // catch 절 함수
 function handleCatchClause(
-  origin: string | undefined,
   e: any,
-  message: string | undefined,
   next: NextFunction | undefined = undefined
 ): void {
-  if (origin === 'Y') {
-    console.error(e);
-    throw new Error(message);
-  } else {
-    next && next(new Error(e.message));
-    throw new Error(e);
-  }
+  console.error(e);
+  next && next(new Error(e.message));
+  throw new Error(e);
 }
 
 export { handleCheckTodayVisit, handleGetLocaleTime, handleCatchClause };

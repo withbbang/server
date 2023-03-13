@@ -24,7 +24,7 @@ function issueAccessToken(params: any): any {
       algorithm: 'HS512'
     });
   } catch (e: any) {
-    handleCatchClause('Y', e, 'Creating access token');
+    handleCatchClause(new Error('Creating access token'));
   }
 
   return accessToken;
@@ -43,7 +43,7 @@ async function verifyAccessToken(
     user = await handleSql(SELECT_USER, { id: req.body.id });
     accessToken = user?.ACCESS_TOKEN;
   } catch (e: any) {
-    handleCatchClause('N', e, e.message, next);
+    handleCatchClause(e, next);
   }
 
   /* 2. 요청 헤더에 토큰 존재 여부 확인 */
@@ -51,12 +51,7 @@ async function verifyAccessToken(
   if (req.headers.authorization) {
     token = req.headers.authorization.split('Bearer ')[1];
   } else {
-    handleCatchClause(
-      'N',
-      new Error('Empty access token'),
-      'Empty access token',
-      next
-    );
+    handleCatchClause(new Error('Empty access token'), next);
   }
 
   /* 3. 토큰 검증 */
@@ -64,17 +59,12 @@ async function verifyAccessToken(
   try {
     result = jwt.verify(token, jwtKey);
   } catch (e: any) {
-    handleCatchClause('N', e, e.message, next);
+    handleCatchClause(new Error('Verifying token'), next);
   }
 
   /* 4. AccessToken 일치 확인 */
   if (accessToken !== token) {
-    handleCatchClause(
-      'N',
-      new Error('Unmatch access token'),
-      'Unmatch access token',
-      next
-    );
+    handleCatchClause(new Error('Unmatch access token'), next);
   }
 
   next();
@@ -90,7 +80,7 @@ function issueRefreshToken(params: any): any {
       algorithm: 'HS512'
     });
   } catch (e: any) {
-    handleCatchClause('Y', e, 'Creating refresh token');
+    handleCatchClause(new Error('Creating refresh token'));
   }
 
   return refreshToken;
@@ -111,7 +101,7 @@ async function verifyRefreshToken(
     accessToken = user?.ACCESS_TOKEN;
     refreshToken = user?.REFRESH_TOKEN;
   } catch (e: any) {
-    handleCatchClause('N', e, e.message, next);
+    handleCatchClause(e, next);
   }
 
   /* 2. 요청 헤더에 토큰 존재 여부 확인 */
@@ -122,4 +112,4 @@ export {
   verifyAccessToken,
   issueRefreshToken,
   verifyRefreshToken
-}
+};

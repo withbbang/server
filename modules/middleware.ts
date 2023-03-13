@@ -41,8 +41,7 @@ function handleErrorMiddleware(app: Express | Router): void {
   app.use(function (
     err: Error,
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
   ): express.Response<any, Record<string, any>> | undefined {
     console.error(err);
 
