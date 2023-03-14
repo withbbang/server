@@ -62,7 +62,6 @@ logOut.post(
       return next(new Error(e.stack));
     }
 
-    //TODO: 클라이언트에서 쿠키에 access refresh token 회수 로직 필요
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
     res.json({ message: 'Logout success' });
