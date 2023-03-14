@@ -85,8 +85,8 @@ logIn.post(
         }
 
         /* 2-1-5. 쿠키설정 및 응답 */
-        res.cookie('accessToken', accessToken, cookieConfig);
-        res.cookie('refreshToken', refreshToken, cookieConfig);
+        res.cookie('atk', accessToken, cookieConfig);
+        res.cookie('rtk', refreshToken, cookieConfig);
         res.json({ message: 'Login success', accessToken, refreshToken });
 
         /* 2-2. 비밀번호 미일치 */

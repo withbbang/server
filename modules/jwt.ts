@@ -176,7 +176,7 @@ async function verifyRefreshToken(
   }
 
   /* 9. 쿠키설정 */
-  res.cookie('accessToken', accessToken, cookieConfig);
+  res.cookie('atk', accessToken, cookieConfig);
   req.headers.authorization = `Bearer ${accessToken}`;
 
   return next();

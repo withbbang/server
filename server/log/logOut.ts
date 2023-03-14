@@ -62,8 +62,8 @@ logOut.post(
       return next(new Error(e.stack));
     }
 
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    res.clearCookie('atk');
+    res.clearCookie('rtk');
     res.json({ message: 'Logout success' });
     // res.redirect('/');
   }
