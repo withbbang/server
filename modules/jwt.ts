@@ -1,5 +1,9 @@
+// 라이브러리 임포트
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+
+// 모듈 임포트
+import { cookieConfig } from '../config/config';
 import { SELECT_USER } from '../queries/select';
 import { UPDATE_USER_ACCESS_TOKEN } from '../queries/update';
 import { User } from '../types/User';
@@ -171,8 +175,9 @@ async function verifyRefreshToken(
     return next(new Error(e.stack));
   }
 
-  //TODO: 새로 발급한 access token을 어떻게 전달해야할지 고민해봐야함
-  req.body.newToken = accessToken;
+  /* 9. 쿠키설정 */
+  res.cookie('accessToken', accessToken, cookieConfig);
+
   return next();
 }
 

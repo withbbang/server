@@ -1,5 +1,7 @@
+// 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
 
+// 모듈 임포트
 import { handleSql } from '../../modules/oracleSetting';
 import { SELECT_USER } from '../../queries/select';
 import { UPDATE_USER_LOGOUT } from '../../queries/update';
@@ -61,6 +63,9 @@ logOut.post(
     }
 
     //TODO: 클라이언트에서 쿠키에 access refresh token 회수 로직 필요
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
     res.json({ message: 'Logout success' });
+    // res.redirect('/');
   }
 );

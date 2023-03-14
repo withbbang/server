@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 
 // 모듈 임포트
 import { handleSql } from './oracleSetting';
-import { cookieConfig } from '../config/config';
+import { cookieConfigSecure } from '../config/config';
 import { SELECT_VISITOR_IP } from '../queries/select';
 import { INSERT_TODAY_VISITOR_IP } from '../queries/insert';
 import { UPDATE_INCREMENT_VISITHISTORY } from '../queries/update';
@@ -19,10 +19,12 @@ async function handleCheckTodayVisit(
   }
 
   const curr: string = handleGetLocaleTime();
-  const visitDate: string | undefined = req.signedCookies?.visitDate; // cookieConfig에서 secure: true일 경우 signedCookies로만 접근 가능
+  // cookieConfigSecure에서 signed: true일 경우 signedCookies로만 접근 가능
+  const visitDate: string | undefined = req.signedCookies?.visitDate;
 
   if (!visitDate || moment(visitDate).isBefore(curr)) {
-    res.cookie('visitDate', curr, cookieConfig); // cookieConfig에 따라 브라우져에 쿠키 설정
+    // cookieConfigSecure에 따라 브라우져에 쿠키 설정
+    res.cookie('visitDate', curr, cookieConfigSecure);
 
     const ip: string | string[] | undefined =
       req.headers['x-forwarded-for'] || req.socket.remoteAddress;

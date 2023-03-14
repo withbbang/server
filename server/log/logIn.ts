@@ -1,10 +1,13 @@
+// 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
 
+// 모듈 임포트
 import {
   handleCreateSha512,
   handleRSADecrypt,
   privateKey
 } from '../../modules/crypto';
+import { cookieConfig } from '../../config/config';
 import { issueAccessToken, issueRefreshToken } from '../../modules/jwt';
 import { handleSql } from '../../modules/oracleSetting';
 import { SELECT_USER } from '../../queries/select';
@@ -81,7 +84,9 @@ logIn.post(
           return next(new Error(e.stack));
         }
 
-        /* 2-1-5. 헤더설정 및 응답 */
+        /* 2-1-5. 쿠키설정 및 응답 */
+        res.cookie('accessToken', accessToken, cookieConfig);
+        res.cookie('refreshToken', refreshToken, cookieConfig);
         res.json({ message: 'Login success', accessToken, refreshToken });
 
         /* 2-2. 비밀번호 미일치 */

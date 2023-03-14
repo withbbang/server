@@ -1,5 +1,7 @@
+// 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
 
+// 모듈 임포트
 import { handleGetLocaleTime } from '../../modules/common';
 import {
   handleCreateSalt,
@@ -18,12 +20,11 @@ import { User } from '../../types/User';
 export const signOut: Router = Router();
 
 /**
+ * TODO: 진행해야함
  * 회원탈퇴
  * @param id        회원 아이디
  * @param password  회원 비밀번호
  */
-
-//TODO 회원탈퇴 진행해야함
 signOut.post(
   '/up',
   async function (
