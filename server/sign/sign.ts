@@ -51,16 +51,16 @@ sign.post(
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    let user: null | User = null;
+    let users: null | Array<User> = null;
 
     /* 1. 회원 존재 여부 확인 */
     try {
-      user = await handleSql(SELECT_USER, { id: req.body.id });
+      users = await handleSql(SELECT_USER, { id: req.body.id });
     } catch (e: any) {
       return next(new Error(e.stack));
     }
 
-    if (user) {
+    if (Array.isArray(users) && users.length > 0) {
       res.send({ message: '이미 있는 유저다.' });
     } else {
       /* 2. 비밀번호 RSA 복호화 */
@@ -115,19 +115,20 @@ sign.post(
 sign.post(
   '/in',
   async function (req: Request, res: Response, next: NextFunction) {
-    let user: null | User = null;
+    let users: null | Array<User> = null;
 
-    const id = req.body.id;
+    const id: string = req.body.id;
 
     /* 1. 회원 존재 여부 확인 */
     try {
-      user = await handleSql(SELECT_USER, { id });
+      users = await handleSql(SELECT_USER, { id });
     } catch (e: any) {
       return next(new Error(e.stack));
     }
 
     /* 2-1. 유저 존재 */
-    if (user) {
+    if (Array.isArray(users) && users.length > 0) {
+      const user = users[0];
       const salt: string = user.SALT;
 
       /* 2-1-1. 비밀번호 복호화 */
@@ -171,9 +172,7 @@ sign.post(
         }
 
         /* 2-1-5. 헤더설정 및 응답 */
-        res.setHeader('Authorization', 'Bearer ' + accessToken);
-        res.setHeader('Refresh', 'Bearer ' + refreshToken);
-        res.json({ message: 'Login success' });
+        res.json({ message: 'Login success', accessToken, refreshToken });
 
         /* 2-2. 비밀번호 미일치 */
       } else {
@@ -185,4 +184,13 @@ sign.post(
       return res.json({ message: '없는 유저다.' });
     }
   }
+);
+
+/**
+ * 로그아웃
+ * @param id  회원 아이디
+ */
+sign.post(
+  '/out',
+  async function (req: Request, res: Response, next: NextFunction) {}
 );

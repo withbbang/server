@@ -45,17 +45,17 @@ async function verifyAccessToken(
   }
 
   /* 2. 회원 존재 여부 확인 */
-  let user: null | User = null;
+  let users: null | Array<User> = null;
   try {
-    user = await handleSql(SELECT_USER, { id: req.body.id });
+    users = await handleSql(SELECT_USER, { id: req.body.id });
   } catch (e: any) {
     return next(new Error(e.stack));
   }
 
   let accessToken: string | undefined = '';
-  if (user) {
+  if (Array.isArray(users) && users.length > 0) {
     /* 3. 유저 존재 */
-    accessToken = user.ACCESS_TOKEN;
+    accessToken = users[0].ACCESS_TOKEN;
 
     /* 3-1. AccessToken 일치 확인 */
     if (accessToken !== token) {
@@ -123,17 +123,17 @@ async function verifyRefreshToken(
   const id = req.body.id;
 
   /* 3. 회원 존재 여부 확인 */
-  let user: null | User = null;
+  let users: null | Array<User> = null;
   try {
-    user = await handleSql(SELECT_USER, { id });
+    users = await handleSql(SELECT_USER, { id });
   } catch (e: any) {
     return next(new Error(e.stack));
   }
 
   let refreshToken: string | undefined = '';
-  if (user) {
+  if (Array.isArray(users) && users.length > 0) {
     /* 4. 유저 존재 */
-    refreshToken = user.REFRESH_TOKEN;
+    refreshToken = users[0].REFRESH_TOKEN;
 
     /* 4-1. RefreshToken 일치 확인 */
     if (refreshToken !== token) {
@@ -159,7 +159,7 @@ async function verifyRefreshToken(
   /* 7. AccessToken 재발급 */
   let accessToken = '';
   try {
-    accessToken = issueAccessToken(id, user.AUTH);
+    accessToken = issueAccessToken(id, users[0].AUTH);
   } catch (e: any) {
     return next(new Error(e.stack));
   }
@@ -171,7 +171,8 @@ async function verifyRefreshToken(
     return next(new Error(e.stack));
   }
 
-  res.setHeader('Authorization', 'Bearer ' + accessToken);
+  //TODO: 새로 발급한 access token을 어떻게 전달해야할지 고민해봐야함
+  req.body.newToken = accessToken;
   return next();
 }
 
