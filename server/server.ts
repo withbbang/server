@@ -2,13 +2,13 @@
 import { Request, Response, Router } from 'express';
 
 // 모듈 임포트
-import { a } from './a';
+import { log } from './log';
 import { sign } from './sign';
 import { error } from './error';
 
 export const server: Router = Router();
 
-server.use('/a', a);
+server.use('/log', log);
 server.use('/sign', sign);
 server.use('/error', error);
 
