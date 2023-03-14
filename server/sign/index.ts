@@ -4,5 +4,5 @@ import { signOut } from './signOut';
 
 export const sign: Router = Router();
 
-sign.use('/up', signOut);
 sign.use('/up', signUp);
+sign.use('/out', signOut);

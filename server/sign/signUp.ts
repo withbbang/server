@@ -22,7 +22,7 @@ export const signUp: Router = Router();
  * @param password  회원 비밀번호
  */
 signUp.post(
-  '/up',
+  '/',
   async function (
     req: Request,
     res: Response,
@@ -79,7 +79,7 @@ signUp.post(
         return next(new Error(e.stack));
       }
 
-      res.json({ message: 'ok' });
+      res.json({ message: 'Sign up success' });
     }
   }
 );
