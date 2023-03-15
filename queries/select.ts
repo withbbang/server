@@ -21,6 +21,7 @@ const SELECT_USER = `
         , SALT
         , ACCESS_TOKEN
         , REFRESH_TOKEN
+        , AUTH
     FROM
         USERS
     WHERE
