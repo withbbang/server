@@ -8,6 +8,7 @@ import { SELECT_USER } from '../queries/select';
 import { UPDATE_USER_ACCESS_TOKEN } from '../queries/update';
 import { User } from '../types/User';
 import { handleSql } from './oracleSetting';
+import { Results } from '../enums/Results';
 
 /* Token 생성 및 검증용 key */
 const jwtKey = 'breadkimismacho';
@@ -45,7 +46,7 @@ async function verifyAccessToken(
   if (req.headers.authorization) {
     token = req.headers.authorization.split('Bearer ')[1];
   } else {
-    return res.json({ message: 'No authorization' });
+    return res.json(Results[40]);
   }
 
   /* 2. 회원 존재 여부 확인 */
@@ -63,11 +64,11 @@ async function verifyAccessToken(
 
     /* 3-1. AccessToken 일치 확인 */
     if (accessToken !== token) {
-      return res.json({ message: 'Unmatch access token' });
+      return res.json(Results[60]);
     }
   } else {
     /* 4. 유저 미존재 */
-    return res.json({ message: 'No user' });
+    return res.json(Results[30]);
   }
 
   /* 4. 토큰 검증 */
@@ -121,7 +122,7 @@ async function verifyRefreshToken(
   if (refresh) {
     token = refresh.split('Bearer ')[1];
   } else {
-    return res.json({ message: 'No Refresh' });
+    return res.json(Results[50]);
   }
 
   const id = req.body.id;
@@ -141,11 +142,11 @@ async function verifyRefreshToken(
 
     /* 4-1. RefreshToken 일치 확인 */
     if (refreshToken !== token) {
-      return res.json({ message: 'Unmatch refresh token' });
+      return res.json(Results[70]);
     }
   } else {
     /* 5. 유저 미존재 */
-    return res.json({ message: 'No user' });
+    return res.json(Results[30]);
   }
 
   /* 6. 토큰 검증 */
@@ -154,7 +155,9 @@ async function verifyRefreshToken(
     result = jwt.verify(token, jwtKey);
   } catch (e: any) {
     if (e.name === 'TokenExpiredError') {
-      return res.json({ message: '재로그인 필요' });
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
+      return res.json(Results[80]);
     } else {
       return next(new Error(e.stack));
     }

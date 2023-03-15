@@ -1,5 +1,6 @@
 // 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
+import { Results } from '../../enums/Results';
 
 // 모듈 임포트
 import { handleSql } from '../../modules/oracleSetting';
@@ -26,7 +27,7 @@ logOut.post(
     if (req.headers.authorization) {
       token = req.headers.authorization.split('Bearer ')[1];
     } else {
-      return res.json({ message: 'No authorization' });
+      return res.json(Results[40]);
     }
     let users: null | Array<User> = null;
 
@@ -46,11 +47,11 @@ logOut.post(
 
       /* 3-1. AccessToken 일치 확인 */
       if (accessToken !== token) {
-        return res.json({ message: 'Unmatch access token' });
+        return res.json(Results[60]);
       }
     } else {
       /* 4. 유저 미존재 */
-      return res.json({ message: 'No user' });
+      return res.json(Results[30]);
     }
 
     /* 5. 유저 로그아웃 갱신 */
@@ -64,7 +65,7 @@ logOut.post(
 
     res.clearCookie('atk');
     res.clearCookie('rtk');
-    res.json({ message: 'Logout success' });
+    res.json(Results[0]);
     // res.redirect('/');
   }
 );

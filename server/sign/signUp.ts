@@ -1,5 +1,6 @@
 // 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
+import { Results } from '../../enums/Results';
 
 // 모듈 임포트
 import { handleGetLocaleTime } from '../../modules/common';
@@ -79,7 +80,7 @@ signUp.post(
         return next(new Error(e.stack));
       }
 
-      res.json({ message: 'Sign up success' });
+      res.json(Results[0]);
     }
   }
 );

@@ -13,6 +13,7 @@ import { handleSql } from '../../modules/oracleSetting';
 import { SELECT_USER } from '../../queries/select';
 import { UPDATE_USER_LOGIN } from '../../queries/update';
 import { User } from '../../types/User';
+import { Results } from '../../enums/Results';
 
 export const logIn: Router = Router();
 
@@ -87,16 +88,16 @@ logIn.post(
         /* 2-1-5. 쿠키설정 및 응답 */
         res.cookie('atk', accessToken, cookieConfig);
         res.cookie('rtk', refreshToken, cookieConfig);
-        res.json({ message: 'Login success', accessToken, refreshToken });
+        res.json(Results[0]);
 
         /* 2-2. 비밀번호 미일치 */
       } else {
-        return res.json({ message: 'Wrong password.' });
+        return res.json(Results[20]);
       }
 
       /* 3. 유저 미존재 */
     } else {
-      return res.json({ message: '없는 유저다.' });
+      return res.json(Results[30]);
     }
   }
 );

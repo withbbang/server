@@ -1,5 +1,6 @@
 // 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
+import { Results } from '../../enums/Results';
 
 // 모듈 임포트
 import { handleGetLocaleTime } from '../../modules/common';
@@ -33,7 +34,7 @@ signOut.post(
     if (req.headers.authorization) {
       token = req.headers.authorization.split('Bearer ')[1];
     } else {
-      return res.json({ message: 'No authorization' });
+      return res.json(Results[40]);
     }
     let users: null | Array<User> = null;
 
@@ -68,17 +69,17 @@ signOut.post(
 
       /* 3-3. 비밀번호 일치 확인 */
       if (password !== user.PASSWORD) {
-        return res.json({ message: 'Unmatch password' });
+        return res.json(Results[20]);
       }
 
       /* 3-4. AccessToken 일치 확인 */
       accessToken = user.ACCESS_TOKEN;
       if (accessToken !== token) {
-        return res.json({ message: 'Unmatch access token' });
+        return res.json(Results[60]);
       }
     } else {
       /* 4. 유저 미존재 */
-      return res.json({ message: 'No user' });
+      return res.json(Results[30]);
     }
 
     /* 5. 유저 로그아웃 갱신 */
@@ -94,7 +95,7 @@ signOut.post(
 
     res.clearCookie('atk');
     res.clearCookie('rtk');
-    res.json({ message: 'Sign out success' });
+    res.json(Results[0]);
     // res.redirect('/');
   }
 );

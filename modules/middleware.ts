@@ -6,6 +6,7 @@ import express, {
   Response,
   NextFunction
 } from 'express';
+import { Results } from '../enums/Results';
 
 // body parser 및 cookie parser 세팅 함수
 function handleSetParser(app: Express | Router): void {
@@ -47,7 +48,7 @@ function handleErrorMiddleware(app: Express | Router): void {
     console.error(err);
 
     if (req.originalUrl.includes('/server')) {
-      return res.json({ message: 'Error Occured!' });
+      return res.json(Results[10]);
     } else {
       return;
     }
