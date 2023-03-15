@@ -11,7 +11,3 @@ export const server: Router = Router();
 server.use('/log', log);
 server.use('/sign', sign);
 server.use('/error', error);
-
-server.get('/', (req: Request, res: Response) => {
-  res.json({ value: 'server' });
-});

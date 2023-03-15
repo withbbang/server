@@ -63,6 +63,11 @@ logIn.post(
 
       /* 2-1-3. 비밀번호 일치 -> 토큰발행 */
       if (password === user.PASSWORD) {
+        /* 2-1-4. 가입대기 유저 */
+        if (user.AUTH === 30) {
+          return res.json(Results[90]);
+        }
+
         let accessToken = '';
         let refreshToken = '';
         try {
@@ -72,7 +77,7 @@ logIn.post(
           return next(new Error(e.stack));
         }
 
-        /* 2-1-4. 유저 로그인 갱신 */
+        /* 2-1-5. 유저 로그인 갱신 */
         try {
           await handleSql(UPDATE_USER_LOGIN, {
             accessToken,
@@ -85,7 +90,7 @@ logIn.post(
           return next(new Error(e.stack));
         }
 
-        /* 2-1-5. 쿠키설정 및 응답 */
+        /* 2-1-6. 쿠키설정 및 응답 */
         res.cookie('atk', accessToken, cookieConfig);
         res.cookie('rtk', refreshToken, cookieConfig);
         res.json(Results[0]);
