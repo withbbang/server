@@ -6,11 +6,19 @@ import { log } from './log';
 import { sign } from './sign';
 import { admin } from './admin';
 import { error } from './error';
-import { verifyAccessToken, verifyRefreshToken } from '../modules/jwt';
+import {
+  handleVerifyATKMiddleware,
+  handleVerifyRTKMiddleware
+} from '../modules/middleware';
 
 export const server: Router = Router();
 
 server.use('/log', log);
 server.use('/sign', sign);
-server.use('/admin', verifyAccessToken, verifyRefreshToken, admin);
+server.use(
+  '/admin',
+  handleVerifyATKMiddleware,
+  handleVerifyRTKMiddleware,
+  admin
+);
 server.use('/error', error);

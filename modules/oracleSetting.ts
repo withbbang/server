@@ -1,11 +1,16 @@
 import oracledb from 'oracledb';
 
+/**
+ * DB 초기화 IIEF
+ */
 (async function (): Promise<void> {
   handleInitOracleClient();
   await handleCreateConnectionPool();
 })();
 
-// oracle client 초기화
+/**
+ * oracle client 초기화
+ */
 function handleInitOracleClient(): void {
   try {
     oracledb.initOracleClient({ libDir: process.env.libDir });
@@ -15,7 +20,9 @@ function handleInitOracleClient(): void {
   }
 }
 
-// connection pool 생성
+/**
+ * connection pool 생성
+ */
 async function handleCreateConnectionPool(): Promise<void> {
   try {
     await oracledb.createPool({
@@ -46,7 +53,12 @@ async function handleGetConnection(): Promise<oracledb.Connection | undefined> {
   }
 }
 
-// sql 실행
+/**
+ * SQL 실행 함수
+ * @param {string} query 쿼리
+ * @param {undefined | any} params 동적 파라미터
+ * @returns {Promise<any>}
+ */
 async function handleSql(
   query: string,
   params: undefined | any = undefined
@@ -88,7 +100,10 @@ async function handleSql(
   return result?.rows;
 }
 
-// connection pool 환원하기
+/**
+ * Connection Pool 환원 함수
+ * @param {oracledb.Connection | null | undefined} connection
+ */
 async function handleReleaseConnection(
   connection: oracledb.Connection | null | undefined
 ): Promise<void> {
@@ -100,7 +115,9 @@ async function handleReleaseConnection(
   }
 }
 
-// connection pool 종료하기
+/**
+ * Connection Pool 종료하기
+ */
 async function handleClosePoolAndExit(): Promise<void> {
   console.log('\nTerminating');
 

@@ -6,7 +6,9 @@ import { UPDATE_INITIATE_TOTAY_VISITHISTORY } from '../queries/update';
 import { DELETE_ALL_VISITOR } from '../queries/delete';
 import { handleSql } from '../modules/oracleSetting';
 
-// 매일 자정에 오늘 방문자 및 방문자 수 0으로 초기화
+/**
+ * 매일 자정에 오늘 방문자 및 방문자 수 0으로 초기화하는 스케쥴러
+ */
 const initTodayVisitHistory: cron.ScheduledTask = cron.schedule(
   '0 0 0 * * *',
   function (): void {
@@ -15,7 +17,9 @@ const initTodayVisitHistory: cron.ScheduledTask = cron.schedule(
   }
 );
 
-// 스케쥴러 한번에 export
+/**
+ * 스케쥴러 한번에 export하는 함수
+ */
 export function handleStartCrons(): void {
   initTodayVisitHistory.start();
 }

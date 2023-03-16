@@ -12,8 +12,8 @@ export const logOut: Router = Router();
 
 /**
  * 로그아웃
- * @param id        회원 아이디
- * @param password  회원 비밀번호
+ * @param id        관리자 아이디
+ * @param password  관리자 비밀번호
  */
 logOut.post(
   '/',

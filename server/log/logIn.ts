@@ -8,7 +8,10 @@ import {
   privateKey
 } from '../../modules/crypto';
 import { cookieConfig } from '../../config/config';
-import { issueAccessToken, issueRefreshToken } from '../../modules/jwt';
+import {
+  handleIssueAccessToken,
+  handleIssueRefreshToken
+} from '../../modules/jwt';
 import { handleSql } from '../../modules/oracleSetting';
 import { SELECT_USER } from '../../queries/select';
 import { UPDATE_USER_LOGIN } from '../../queries/update';
@@ -19,8 +22,8 @@ export const logIn: Router = Router();
 
 /**
  * 로그인
- * @param id        회원 아이디
- * @param password  회원 비밀번호
+ * @param id        관리자 아이디
+ * @param password  관리자 비밀번호
  */
 logIn.post(
   '/',
@@ -71,8 +74,8 @@ logIn.post(
         let accessToken = '';
         let refreshToken = '';
         try {
-          accessToken = issueAccessToken(id, user.AUTH);
-          refreshToken = issueRefreshToken();
+          accessToken = handleIssueAccessToken(id, user.AUTH);
+          refreshToken = handleIssueRefreshToken();
         } catch (e: any) {
           return next(new Error(e.stack));
         }

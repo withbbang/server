@@ -9,7 +9,12 @@ import { SELECT_VISITOR_IP } from '../queries/select';
 import { INSERT_TODAY_VISITOR_IP } from '../queries/insert';
 import { UPDATE_INCREMENT_VISITHISTORY } from '../queries/update';
 
-// 금일 방문 여부 체크
+/**
+ * 금일 방문여부 체크 함수
+ * @param {Request} req Http Request
+ * @param {Response} res Http Response
+ * @returns {Promise<any>}
+ */
 async function handleCheckTodayVisit(
   req: Request,
   res: Response
@@ -48,7 +53,11 @@ async function handleCheckTodayVisit(
   }
 }
 
-// 현지 시간 계산
+/**
+ * 현지 시간 계산 함수
+ * @param {string} type 날짜 return할 날짜 포맷
+ * @returns {string}
+ */
 function handleGetLocaleTime(type: string = 'date'): string {
   if (type === 'date') return moment().tz('Asia/Seoul').format('YYYY-MM-DD');
   else if (type === 'db')

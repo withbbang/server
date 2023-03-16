@@ -6,6 +6,8 @@ import { Results } from '../../enums/Results';
 import { User } from '../../types/User';
 import { SELECT_USER } from '../../queries/select';
 import { handleSql } from '../../modules/oracleSetting';
+import { handleVerifyToken } from '../../modules/jwt';
+import { JwtPayload } from 'jsonwebtoken';
 
 export const adminInfo: Router = Router();
 
@@ -13,14 +15,14 @@ export const adminInfo: Router = Router();
  * 로그인한 관리자 정보
  * @param id    관리자 아이디
  */
-adminInfo.get(
+//TODO: body에 id 넘길 방법 모색 필요
+adminInfo.post(
   '/',
   async function (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
-    const id = req.body.id;
     /* 1. 요청 헤더에 토큰 존재 여부 확인 */
     let token: string = '';
     if (req.headers.authorization) {
@@ -29,10 +31,17 @@ adminInfo.get(
       return res.json(Results[40]);
     }
 
+    let decoded: JwtPayload;
+    try {
+      decoded = handleVerifyToken(token);
+    } catch (e: any) {
+      return next(new Error(e.stack));
+    }
+
     /* 2. 회원 존재 여부 확인 */
     let users: null | Array<User> = null;
     try {
-      users = await handleSql(SELECT_USER, { id });
+      users = await handleSql(SELECT_USER, { id: decoded.id });
     } catch (e: any) {
       return next(new Error(e.stack));
     }
