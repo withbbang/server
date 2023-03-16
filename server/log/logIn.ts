@@ -93,7 +93,7 @@ logIn.post(
         /* 2-1-6. 쿠키설정 및 응답 */
         res.cookie('atk', accessToken, cookieConfig);
         res.cookie('rtk', refreshToken, cookieConfig);
-        res.json(Results[0]);
+        return res.json(Results[0]);
 
         /* 2-2. 비밀번호 미일치 */
       } else {

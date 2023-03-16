@@ -28,7 +28,7 @@ signUp.post(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ): Promise<void | Response<any, Record<string, any>>> {
     let users: null | Array<User> = null;
 
     /* 1. 회원 존재 여부 확인 */
@@ -80,7 +80,7 @@ signUp.post(
         return next(new Error(e.stack));
       }
 
-      res.json(Results[0]);
+      return res.json(Results[0]);
     }
   }
 );

@@ -26,7 +26,7 @@ function handleRSADecrypt(
   const rsaPrivateKey = {
     key: privateKey,
     passphrase: process.env.passphrase,
-    padding: crypto.constants.RSA_NO_PADDING
+    padding: crypto.constants.RSA_PKCS1_PADDING
   };
 
   let decryptedMessage: Buffer = Buffer.from('');

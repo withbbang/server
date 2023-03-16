@@ -1,6 +1,5 @@
 // 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
-import { Results } from '../../enums/Results';
 
 // 모듈 임포트
 import { handleGetLocaleTime } from '../../modules/common';
@@ -13,6 +12,7 @@ import { handleSql } from '../../modules/oracleSetting';
 import { SELECT_USER } from '../../queries/select';
 import { UPDATE_USER_WITHDRAW } from '../../queries/update';
 import { User } from '../../types/User';
+import { Results } from '../../enums/Results';
 
 export const signOut: Router = Router();
 
@@ -36,9 +36,9 @@ signOut.post(
     } else {
       return res.json(Results[40]);
     }
-    let users: null | Array<User> = null;
 
     /* 2. 회원 존재 여부 확인 */
+    let users: null | Array<User> = null;
     try {
       users = await handleSql(SELECT_USER, { id });
     } catch (e: any) {
@@ -95,7 +95,7 @@ signOut.post(
 
     res.clearCookie('atk');
     res.clearCookie('rtk');
-    res.json(Results[0]);
-    // res.redirect('/');
+    return res.json(Results[0]);
+    // return res.redirect('/');
   }
 );
