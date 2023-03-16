@@ -38,7 +38,7 @@ logIn.post(
 
     /* 1. 회원 존재 여부 확인 */
     try {
-      users = await handleSql(SELECT_USER, { id });
+      users = await handleSql(SELECT_USER({ id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -82,13 +82,15 @@ logIn.post(
 
         /* 2-1-5. 유저 로그인 갱신 */
         try {
-          await handleSql(UPDATE_USER_LOGIN, {
-            accessToken,
-            refreshToken,
-            id,
-            salt,
-            password
-          });
+          await handleSql(
+            UPDATE_USER_LOGIN({
+              accessToken,
+              refreshToken,
+              id,
+              salt,
+              password
+            })
+          );
         } catch (e: any) {
           return next(new Error(e.stack));
         }

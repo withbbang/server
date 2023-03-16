@@ -35,7 +35,7 @@ logOut.post(
 
     /* 2. 회원 존재 여부 확인 */
     try {
-      users = await handleSql(SELECT_USER, { id });
+      users = await handleSql(SELECT_USER({ id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -56,9 +56,7 @@ logOut.post(
 
     /* 5. 유저 로그아웃 갱신 */
     try {
-      await handleSql(UPDATE_USER_LOGOUT, {
-        id
-      });
+      await handleSql(UPDATE_USER_LOGOUT({ id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }

@@ -12,7 +12,10 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 // 모듈 임포트
 import { cookieConfig } from '../config/config';
 import { SELECT_USER } from '../queries/select';
-import { UPDATE_USER_ACCESS_TOKEN } from '../queries/update';
+import {
+  UPDATE_USER_ACCESS_TOKEN,
+  UPDATE_USER_LOGOUT
+} from '../queries/update';
 import { User } from '../types/User';
 import { handleSql } from './oracleSetting';
 import { Results } from '../enums/Results';
@@ -103,15 +106,22 @@ async function handleVerifyATKMiddleware(
   /* 2. 토큰에서 유저 ID 빼오기 */
   let decoded: JwtPayload;
   try {
-    decoded = handleVerifyToken(token);
+    decoded = jwt.verify(token, jwtKey) as jwt.JwtPayload;
   } catch (e: any) {
-    return next(new Error(e.stack));
+    if (e.name === 'TokenExpiredError') {
+      /* 6-1. 토큰 만료시 재발급 */
+      req.body.requiredRefresh = 'Y';
+      return next();
+    } else {
+      /* 6-2. 다른 에러일 경우 넘기기 */
+      return next(new Error(e.stack));
+    }
   }
 
   /* 3. 회원 존재 여부 확인 */
   let users: null | Array<User> = null;
   try {
-    users = await handleSql(SELECT_USER, { id: req.body.id || decoded.id });
+    users = await handleSql(SELECT_USER({ id: req.body.id || decoded.id }));
   } catch (e: any) {
     return next(new Error(e.stack));
   }
@@ -128,20 +138,6 @@ async function handleVerifyATKMiddleware(
   } else {
     /* 5. 유저 미존재 */
     return res.json(Results[30]);
-  }
-
-  /* 6. 토큰 검증 */
-  try {
-    jwt.verify(token, jwtKey);
-  } catch (e: any) {
-    if (e.name === 'TokenExpiredError') {
-      /* 6-1. 토큰 만료시 재발급 */
-      req.body.requiredRefresh = 'Y';
-      return next();
-    } else {
-      /* 6-2. 다른 에러일 경우 넘기기 */
-      return next(new Error(e.stack));
-    }
   }
 
   return next();
@@ -165,28 +161,24 @@ async function handleVerifyRTKMiddleware(
   }
 
   /* 2. 요청 헤더에 토큰 존재 여부 확인 */
-  let token: string = '';
-  let refresh = req.headers.Refresh as string | undefined;
+  const access: string = req.headers.authorization?.split(
+    'Bearer '
+  )[1] as string;
+  let refresh = req.headers.refresh as string | undefined;
   if (refresh) {
-    token = refresh.split('Bearer ')[1];
+    refresh = refresh.split('Bearer ')[1];
   } else {
     return res.json(Results[50]);
   }
 
-  /* 3. 토큰에서 유저 ID 빼오기 */
-  let decoded: JwtPayload;
-  try {
-    decoded = handleVerifyToken(token);
-  } catch (e: any) {
-    return next(new Error(e.stack));
-  }
-
-  const id: string = req.body.id || decoded.id;
+  const id: string = req.body.id;
 
   /* 4. 회원 존재 여부 확인 */
   let users: null | Array<User> = null;
   try {
-    users = await handleSql(SELECT_USER, { id });
+    users = await handleSql(
+      SELECT_USER({ id, accessToken: access, refreshToken: refresh })
+    );
   } catch (e: any) {
     return next(new Error(e.stack));
   }
@@ -197,7 +189,7 @@ async function handleVerifyRTKMiddleware(
     refreshToken = users[0].REFRESH_TOKEN;
 
     /* 5-1. RefreshToken 일치 확인 */
-    if (refreshToken !== token) {
+    if (refreshToken !== refresh) {
       return res.json(Results[70]);
     }
   } else {
@@ -207,11 +199,20 @@ async function handleVerifyRTKMiddleware(
 
   /* 7. 토큰 검증 */
   try {
-    jwt.verify(token, jwtKey);
+    jwt.verify(refresh, jwtKey);
   } catch (e: any) {
     if (e.name === 'TokenExpiredError') {
       res.clearCookie('atk');
       res.clearCookie('rtk');
+      try {
+        await handleSql(
+          UPDATE_USER_LOGOUT({
+            id: id || users[0].ID
+          })
+        );
+      } catch (e: any) {
+        return next(new Error(e.stack));
+      }
       return res.json(Results[80]);
     } else {
       return next(new Error(e.stack));
@@ -221,14 +222,16 @@ async function handleVerifyRTKMiddleware(
   /* 8. AccessToken 재발급 */
   let accessToken = '';
   try {
-    accessToken = handleIssueAccessToken(id, users[0].AUTH);
+    accessToken = handleIssueAccessToken(id || users[0].ID, users[0].AUTH);
   } catch (e: any) {
     return next(new Error(e.stack));
   }
 
   /* 9. 유저 AccessToken DB 업데이트 */
   try {
-    await handleSql(UPDATE_USER_ACCESS_TOKEN, { id });
+    await handleSql(
+      UPDATE_USER_ACCESS_TOKEN({ accessToken, id: id || users[0].ID })
+    );
   } catch (e: any) {
     return next(new Error(e.stack));
   }

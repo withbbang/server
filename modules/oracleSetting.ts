@@ -1,4 +1,5 @@
 import oracledb from 'oracledb';
+import { SqlFuncType } from '../types/SqlFuncType';
 
 /**
  * DB 초기화 IIEF
@@ -59,10 +60,7 @@ async function handleGetConnection(): Promise<oracledb.Connection | undefined> {
  * @param {undefined | any} params 동적 파라미터
  * @returns {Promise<any>}
  */
-async function handleSql(
-  query: string,
-  params: undefined | any = undefined
-): Promise<any> {
+async function handleSql({ query, params }: SqlFuncType): Promise<any> {
   let connection: oracledb.Connection | null | undefined = null;
 
   try {
@@ -71,11 +69,15 @@ async function handleSql(
     throw new Error(e.stack);
   }
 
-  let binds = params ? { ...params } : {}; // 동적 쿼리 파라미터인듯
-  let options = {
+  const binds = params ? { ...params } : {}; // 동적 쿼리 파라미터인듯
+  const options = {
     autoCommit: true, // 자동 커밋
     outFormat: oracledb.OUT_FORMAT_OBJECT // 쿼리 결과 포맷 (json 객체 형식)
   };
+
+  for (let id in binds) {
+    if (binds[id] === undefined) delete binds[id];
+  }
 
   console.log(`SQL >>> ${query}`);
   binds.constructor === Object &&

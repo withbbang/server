@@ -41,7 +41,7 @@ adminInfo.post(
     /* 2. 회원 존재 여부 확인 */
     let users: null | Array<User> = null;
     try {
-      users = await handleSql(SELECT_USER, { id: decoded.id });
+      users = await handleSql(SELECT_USER({ id: decoded.id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }

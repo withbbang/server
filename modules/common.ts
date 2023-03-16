@@ -37,15 +37,15 @@ async function handleCheckTodayVisit(
     let visitor = null;
 
     try {
-      visitor = await handleSql(SELECT_VISITOR_IP, { ip });
+      visitor = await handleSql(SELECT_VISITOR_IP({ ip }));
     } catch (e: any) {
       throw new Error(e.stack);
     }
 
     if (visitor?.length === 0) {
       try {
-        handleSql(INSERT_TODAY_VISITOR_IP, { ip });
-        handleSql(UPDATE_INCREMENT_VISITHISTORY);
+        handleSql(INSERT_TODAY_VISITOR_IP({ ip }));
+        handleSql(UPDATE_INCREMENT_VISITHISTORY());
       } catch (e: any) {
         throw new Error(e.stack);
       }

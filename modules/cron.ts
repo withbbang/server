@@ -12,8 +12,8 @@ import { handleSql } from '../modules/oracleSetting';
 const initTodayVisitHistory: cron.ScheduledTask = cron.schedule(
   '0 0 0 * * *',
   function (): void {
-    handleSql(UPDATE_INITIATE_TOTAY_VISITHISTORY);
-    handleSql(DELETE_ALL_VISITOR);
+    handleSql(UPDATE_INITIATE_TOTAY_VISITHISTORY());
+    handleSql(DELETE_ALL_VISITOR());
   }
 );
 

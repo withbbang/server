@@ -33,7 +33,7 @@ signUp.post(
 
     /* 1. 회원 존재 여부 확인 */
     try {
-      users = await handleSql(SELECT_USER, { id: req.body.id });
+      users = await handleSql(SELECT_USER({ id: req.body.id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -69,13 +69,15 @@ signUp.post(
       try {
         password &&
           salt &&
-          (await handleSql(INSERT_USER, {
-            id: req.body.id,
-            password,
-            salt,
-            auth: 30,
-            createdt: handleGetLocaleTime('db')
-          }));
+          (await handleSql(
+            INSERT_USER({
+              id: req.body.id,
+              password,
+              salt,
+              auth: 30,
+              createdt: handleGetLocaleTime('db')
+            })
+          ));
       } catch (e: any) {
         return next(new Error(e.stack));
       }

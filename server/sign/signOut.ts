@@ -40,7 +40,7 @@ signOut.post(
     /* 2. 회원 존재 여부 확인 */
     let users: null | Array<User> = null;
     try {
-      users = await handleSql(SELECT_USER, { id });
+      users = await handleSql(SELECT_USER({ id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -84,11 +84,13 @@ signOut.post(
 
     /* 5. 유저 로그아웃 갱신 */
     try {
-      await handleSql(UPDATE_USER_WITHDRAW, {
-        id,
-        updatedt: handleGetLocaleTime('db'),
-        deletedt: handleGetLocaleTime('db')
-      });
+      await handleSql(
+        UPDATE_USER_WITHDRAW({
+          id,
+          updatedt: handleGetLocaleTime('db'),
+          deletedt: handleGetLocaleTime('db')
+        })
+      );
     } catch (e: any) {
       return next(new Error(e.stack));
     }
