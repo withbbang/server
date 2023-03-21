@@ -122,18 +122,28 @@ async function handleMultipleSql(
   }
 
   const binds = params;
+  //TODO: binds의 값이 null | undefined 체크 필요
+  const bindDefs: any = {};
+  // 데이터 타입 지정하는 부분 TODO: 나중에 다른 다중 트랜잭션이 필요할 경우 공용코드가 될 수 있도록 수정해야함
+  Object.entries(binds[0]).forEach(([k, v]) => {
+    if (typeof v === 'string' && !isNaN(+v)) {
+      bindDefs[k] = { type: oracledb.STRING, maxSize: 15 };
+    } else if (typeof v === 'string' && k === 'update_user') {
+      bindDefs[k] = { type: oracledb.STRING, maxSize: 100 };
+    } else if (typeof v === 'string') {
+      bindDefs[k] = { type: oracledb.STRING, maxSize: 50 };
+    } else if (typeof v === 'number') {
+      bindDefs[k] = { type: oracledb.NUMBER };
+    } else {
+    }
+  });
+
   const options = {
     autoCommit: true,
-    bindDefs: [
-      { type: oracledb.NUMBER },
-      { type: oracledb.STRING, maxSize: 50 },
-      { type: oracledb.DATE }
-    ],
+    bindDefs,
     batchSize: 10,
     outFormat: oracledb.OUT_FORMAT_OBJECT
   };
-
-  connection?.executeMany;
 
   console.log(`SQL >>> ${query}`);
   console.log(`Parameters >>> ${binds.toString()}}`);

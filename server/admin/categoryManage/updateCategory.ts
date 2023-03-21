@@ -59,6 +59,11 @@ updateCategory.post(
         }
       );
 
+      /* 3-3. 갱신할게 없는 경우 */
+      if (toBeData.length < 1) {
+        return res.json(Results[110]);
+      }
+
       /* 3-3. 다중 갱신 */
       const { query } = UPDATE_CATEGORY();
       const params = toBeData.map((data: Category) => {

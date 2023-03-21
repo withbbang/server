@@ -91,7 +91,7 @@ function UPDATE_USER_WITHDRAW(params: any) {
 }
 
 function UPDATE_CATEGORY(params: any = {}) {
-  const { id, title, priority } = params;
+  const { id, title, priority, update_dt, update_user } = params;
   const query = `
     UPDATE
       CATEGORY

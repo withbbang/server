@@ -45,7 +45,7 @@ createCategory.post(
         await handleSql(
           INSERT_CATEGORY({
             title: req.body.title,
-            priority: req.body.priority || categories?.length,
+            priority: req.body.priority,
             create_dt: handleGetLocaleTime('db'),
             create_user: req.body.id
           })

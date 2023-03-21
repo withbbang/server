@@ -18,8 +18,22 @@ function INSERT_USER(params: any) {
 function INSERT_CATEGORY(params: any) {
   const { title, priority, create_dt, create_user } = params;
   const query = `
-    INSERT INTO CATEGORY (TITLE, PRIORITY, CREATE_DT, CREATE_USER)
-    VALUES (:title, :priority, TO_DATE(:create_dt, 'YYYYMMDDHH24MISS'), :create_user);
+    INSERT INTO CATEGORY (
+      TITLE
+      , PRIORITY
+      , CREATE_DT
+      , CREATE_USER
+    )
+    VALUES (
+      :title
+      , ${
+        typeof priority === 'number'
+          ? ':priority'
+          : '(SELECT MAX(PRIORITY) + 1 FROM CATEGORY)'
+      }
+      , TO_DATE(:create_dt, 'YYYYMMDDHH24MISS')
+      , :create_user
+    )
   `;
 
   return { query, params };
