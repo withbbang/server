@@ -100,6 +100,8 @@ async function handleVerifyATKMiddleware(
   if (req.headers.authorization) {
     token = req.headers.authorization.split('Bearer ')[1];
   } else {
+    res.clearCookie('atk');
+    res.clearCookie('rtk');
     return res.json(Results[40]);
   }
 
@@ -135,10 +137,15 @@ async function handleVerifyATKMiddleware(
 
     /* 4-1. AccessToken 일치 확인 */
     if (accessToken !== token) {
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
       return res.json(Results[60]);
     }
   } else {
     /* 5. 유저 미존재 */
+    //TODO: 쿠키는 삭제했지만 화면에서 인덱스 페이지로 리다이렉트 하지 않음. 방법 모색 필요
+    res.clearCookie('atk');
+    res.clearCookie('rtk');
     return res.json(Results[30]);
   }
 
@@ -170,6 +177,8 @@ async function handleVerifyRTKMiddleware(
   if (refresh) {
     refresh = refresh.split('Bearer ')[1];
   } else {
+    res.clearCookie('atk');
+    res.clearCookie('rtk');
     return res.json(Results[50]);
   }
 
@@ -192,10 +201,14 @@ async function handleVerifyRTKMiddleware(
 
     /* 5-1. RefreshToken 일치 확인 */
     if (refreshToken !== refresh) {
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
       return res.json(Results[70]);
     }
   } else {
     /* 6. 유저 미존재 */
+    res.clearCookie('atk');
+    res.clearCookie('rtk');
     return res.json(Results[30]);
   }
 
@@ -215,6 +228,8 @@ async function handleVerifyRTKMiddleware(
       } catch (e: any) {
         return next(new Error(e.stack));
       }
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
       return res.json(Results[80]);
     } else {
       return next(new Error(e.stack));

@@ -28,6 +28,8 @@ adminInfo.post(
     if (req.headers.authorization) {
       token = req.headers.authorization.split('Bearer ')[1];
     } else {
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
       return res.json(Results[40]);
     }
 
@@ -54,12 +56,16 @@ adminInfo.post(
       /* 3-1. AccessToken 일치 확인 */
       accessToken = user.ACCESS_TOKEN;
       if (accessToken !== token) {
+        res.clearCookie('atk');
+        res.clearCookie('rtk');
         return res.json(Results[60]);
       }
 
       return res.json({ ...Results[0], id: user.ID, auth: user.AUTH });
     } else {
       /* 4. 유저 미존재 */
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
       return res.json(Results[30]);
     }
   }

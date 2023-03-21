@@ -40,6 +40,8 @@ signOut.post(
     if (req.headers.authorization) {
       token = req.headers.authorization.split('Bearer ')[1];
     } else {
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
       return res.json(Results[40]);
     }
 
@@ -81,10 +83,14 @@ signOut.post(
       /* 3-4. AccessToken 일치 확인 */
       accessToken = user.ACCESS_TOKEN;
       if (accessToken !== token) {
+        res.clearCookie('atk');
+        res.clearCookie('rtk');
         return res.json(Results[60]);
       }
     } else {
       /* 4. 유저 미존재 */
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
       return res.json(Results[30]);
     }
 
