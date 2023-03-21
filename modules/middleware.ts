@@ -126,6 +126,8 @@ async function handleVerifyATKMiddleware(
     return next(new Error(e.stack));
   }
 
+  req.body.id = req.body.id || decoded.id;
+
   let accessToken: string | undefined = '';
   if (Array.isArray(users) && users.length > 0) {
     /* 4. 유저 존재 */

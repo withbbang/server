@@ -1,5 +1,6 @@
 // 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
+import { JwtPayload } from 'jsonwebtoken';
 
 // 모듈 임포트
 import { Results } from '../../enums/Results';
@@ -7,7 +8,6 @@ import { User } from '../../types/User';
 import { SELECT_USER } from '../../queries/select';
 import { handleSql } from '../../modules/oracleSetting';
 import { handleVerifyToken } from '../../modules/jwt';
-import { JwtPayload } from 'jsonwebtoken';
 
 export const adminInfo: Router = Router();
 

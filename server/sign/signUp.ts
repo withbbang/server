@@ -29,9 +29,13 @@ signUp.post(
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
-    let users: null | Array<User> = null;
+    /* 0. 필수값 존재 확인 */
+    if (!req.body.id || !req.body.password) {
+      return res.json(Results[120]);
+    }
 
     /* 1. 회원 존재 여부 확인 */
+    let users: null | Array<User> = null;
     try {
       users = await handleSql(SELECT_USER({ id: req.body.id }));
     } catch (e: any) {
@@ -39,7 +43,7 @@ signUp.post(
     }
 
     if (Array.isArray(users) && users.length > 0) {
-      res.send({ message: '이미 있는 유저다.' });
+      return res.json(Results[100]);
     } else {
       /* 2. 비밀번호 RSA 복호화 */
       let decrypted: string = '';
@@ -75,7 +79,7 @@ signUp.post(
               password,
               salt,
               auth: 30,
-              createdt: handleGetLocaleTime('db')
+              create_dt: handleGetLocaleTime('db')
             })
           ));
       } catch (e: any) {

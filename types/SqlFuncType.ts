@@ -1,4 +1,4 @@
 export interface SqlFuncType {
   query: string;
-  params: undefined | any | undefined;
+  params?: undefined | any | undefined;
 }

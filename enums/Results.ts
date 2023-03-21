@@ -22,7 +22,11 @@ const Results = Object.freeze({
   60: { code: '000060', message: '인증토큰 불일치' },
   70: { code: '000070', message: '재인증토큰 불일치' },
   80: { code: '000080', message: '인증토큰만료' },
-  90: { code: '000090', message: '가입대기' }
+  90: { code: '000090', message: '가입대기' },
+  100: { code: '000100', message: '이미존재하는데이터' },
+  110: { code: '000110', message: '존재하지않는데이터' },
+  120: { code: '000120', message: '필수값부재' },
+  130: { code: '000130', message: '부적절한요청' }
 });
 
 export { Results };

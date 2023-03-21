@@ -32,11 +32,15 @@ logIn.post(
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
-    let users: null | Array<User> = null;
+    /* 0. 필수값 존재 확인 */
+    if (!req.body.id || !req.body.password) {
+      return res.json(Results[120]);
+    }
 
     const id: string = req.body.id;
 
     /* 1. 회원 존재 여부 확인 */
+    let users: null | Array<User> = null;
     try {
       users = await handleSql(SELECT_USER({ id }));
     } catch (e: any) {

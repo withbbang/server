@@ -28,7 +28,13 @@ signOut.post(
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
+    /* 0. 필수값 존재 확인 */
+    if (!req.body.id || !req.body.password) {
+      return res.json(Results[120]);
+    }
+
     const id = req.body.id;
+
     /* 1. 요청 헤더에 토큰 존재 여부 확인 */
     let token: string = '';
     if (req.headers.authorization) {
@@ -87,8 +93,8 @@ signOut.post(
       await handleSql(
         UPDATE_USER_WITHDRAW({
           id,
-          updatedt: handleGetLocaleTime('db'),
-          deletedt: handleGetLocaleTime('db')
+          update_dt: handleGetLocaleTime('db'),
+          delete_dt: handleGetLocaleTime('db')
         })
       );
     } catch (e: any) {

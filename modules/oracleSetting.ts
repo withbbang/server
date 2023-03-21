@@ -55,7 +55,7 @@ async function handleGetConnection(): Promise<oracledb.Connection | undefined> {
 }
 
 /**
- * SQL 실행 함수
+ * 단일 SQL 실행 함수
  * @param {string} query 쿼리
  * @param {undefined | any} params 동적 파라미터
  * @returns {Promise<any>}
@@ -75,6 +75,7 @@ async function handleSql({ query, params }: SqlFuncType): Promise<any> {
     outFormat: oracledb.OUT_FORMAT_OBJECT // 쿼리 결과 포맷 (json 객체 형식)
   };
 
+  // undefined 값도 key에 바인딩 되기 때문에 제거해야함
   for (let id in binds) {
     if (binds[id] === undefined) delete binds[id];
   }
@@ -90,6 +91,58 @@ async function handleSql({ query, params }: SqlFuncType): Promise<any> {
 
   try {
     result = connection && (await connection.execute(query, binds, options));
+  } catch (e: any) {
+    throw new Error(e.stack);
+  } finally {
+    await handleReleaseConnection(connection);
+  }
+
+  typeof result?.rows?.length === 'number' &&
+    console.log(`Total >>> ${result?.rows?.length}`);
+
+  return result?.rows;
+}
+
+/**
+ * 다중 SQL 실행 함수
+ * @param {string} query 쿼리
+ * @param {undefined | any} params 동적 파라미터
+ * @returns {Promise<any>}
+ */
+async function handleMultipleSql(
+  query: string,
+  params: Array<any>
+): Promise<any> {
+  let connection: oracledb.Connection | null | undefined = null;
+
+  try {
+    connection = await handleGetConnection();
+  } catch (e: any) {
+    throw new Error(e.stack);
+  }
+
+  const binds = params;
+  const options = {
+    autoCommit: true,
+    bindDefs: [
+      { type: oracledb.NUMBER },
+      { type: oracledb.STRING, maxSize: 50 },
+      { type: oracledb.DATE }
+    ],
+    batchSize: 10,
+    outFormat: oracledb.OUT_FORMAT_OBJECT
+  };
+
+  connection?.executeMany;
+
+  console.log(`SQL >>> ${query}`);
+  console.log(`Parameters >>> ${binds.toString()}}`);
+
+  let result: any = null;
+
+  try {
+    result =
+      connection && (await connection.executeMany(query, binds, options));
   } catch (e: any) {
     throw new Error(e.stack);
   } finally {
@@ -131,4 +184,4 @@ async function handleClosePoolAndExit(): Promise<void> {
   }
 }
 
-export { handleSql, handleClosePoolAndExit };
+export { handleSql, handleMultipleSql, handleClosePoolAndExit };
