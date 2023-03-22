@@ -5,6 +5,7 @@ import { Router } from 'express';
 import { log } from './log';
 import { sign } from './sign';
 import { admin } from './admin';
+import { common } from './common';
 import { error } from './error';
 import {
   handleVerifyATKMiddleware,
@@ -21,4 +22,5 @@ server.use(
   handleVerifyRTKMiddleware,
   admin
 );
+server.use('/common', common);
 server.use('/error', error);

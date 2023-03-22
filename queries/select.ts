@@ -66,9 +66,18 @@ function SELECT_CATEGORIES(params: any) {
   return { query, params };
 }
 
+function SELECT_VISIT_COUNT() {
+  const query = `
+    SELECT * FROM VISITHISTORY
+  `;
+
+  return { query };
+}
+
 export {
   SELECT_VISITOR_IP,
   SELECT_USER,
   SELECT_ALL_CATEGORIES,
-  SELECT_CATEGORIES
+  SELECT_CATEGORIES,
+  SELECT_VISIT_COUNT
 };
