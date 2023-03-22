@@ -129,6 +129,7 @@ async function handleVerifyATKMiddleware(
   }
 
   req.body.id = req.body.id || decoded.id;
+  req.body.auth = decoded.auth;
 
   let accessToken: string | undefined = '';
   if (Array.isArray(users) && users.length > 0) {
