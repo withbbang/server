@@ -102,7 +102,7 @@ logIn.post(
         /* 2-1-6. 쿠키설정 및 응답 */
         res.cookie('atk', accessToken, cookieConfig);
         res.cookie('rtk', refreshToken, cookieConfig);
-        return res.json(Results[0]);
+        return res.json({ ...Results[0], id: user.ID, auth: user.AUTH });
 
         /* 2-2. 비밀번호 미일치 */
       } else {

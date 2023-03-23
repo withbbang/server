@@ -22,6 +22,8 @@ categories.post(
   ): Promise<void | Response<any, Record<string, any>>> {
     const id: any | undefined = req.body.id;
 
+    console.log('id: ', id);
+
     /* 1. 회원 존재 여부 확인 */
     let users: null | Array<User> = null;
     try {
