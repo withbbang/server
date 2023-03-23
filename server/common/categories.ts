@@ -20,9 +20,7 @@ categories.post(
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
-    const id: any | undefined = req.body.id;
-
-    console.log('id: ', id);
+    const id: any | undefined = req.body.id || undefined;
 
     /* 1. 회원 존재 여부 확인 */
     let users: null | Array<User> = null;
