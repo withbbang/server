@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import { publicKey } from '../../modules/crypto';
 import { Results } from '../../enums/Results';
 import { visitCount } from './visitCount';
+import { categories } from './categories';
 
 export const common: Router = Router();
 
@@ -13,3 +14,4 @@ common.get('/public-key', function (req: Request, res: Response): void {
 });
 
 common.use('/visit-count', visitCount);
+common.use('/categories', categories);

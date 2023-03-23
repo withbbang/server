@@ -50,11 +50,13 @@ function SELECT_ALL_CATEGORIES() {
   return { query };
 }
 
-function SELECT_CATEGORIES(params: any) {
+function SELECT_CATEGORIES(params?: any) {
   const { title, id, auth } = params;
   const query = `
     SELECT
-      TITLE
+      ID
+      , TITLE
+      , PRIORITY
     FROM
       CATEGORY
     WHERE

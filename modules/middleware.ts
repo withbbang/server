@@ -114,6 +114,20 @@ async function handleVerifyATKMiddleware(
       /* 6-1. 토큰 만료시 재발급 */
       req.body.requiredRefresh = 'Y';
       return next();
+    } else if (e.name === 'JsonWebTokenError') {
+      res.clearCookie('atk');
+      res.clearCookie('rtk');
+      try {
+        await handleSql(
+          UPDATE_USER_LOGOUT({
+            id: req.body.id
+          })
+        );
+      } catch (e: any) {
+        return next(new Error(e.stack));
+      }
+
+      return res.json(Results[80]);
     } else {
       /* 6-2. 다른 에러일 경우 넘기기 */
       return next(new Error(e.stack));
@@ -229,8 +243,7 @@ async function handleVerifyRTKMiddleware(
       } catch (e: any) {
         return next(new Error(e.stack));
       }
-      res.clearCookie('atk');
-      res.clearCookie('rtk');
+
       return res.json(Results[80]);
     } else {
       return next(new Error(e.stack));
