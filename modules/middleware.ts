@@ -127,7 +127,7 @@ async function handleVerifyATKMiddleware(
         return next(new Error(e.stack));
       }
 
-      return res.json(Results[80]);
+      return res.json(Results[90]);
     } else {
       /* 6-2. 다른 에러일 경우 넘기기 */
       return next(new Error(e.stack));

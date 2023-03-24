@@ -24,7 +24,7 @@ updateCategory.post(
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
     if (!req.body.categories) {
-      return res.json(Results[120]);
+      return res.json(Results[130]);
     }
 
     /* 1. 카테고리들 가져오기 */
@@ -37,7 +37,7 @@ updateCategory.post(
 
     if (req.body.categories.length < 1) {
       /* 2. 화면에서 넘어온 데이터가 없을 경우 */
-      return res.json(Results[110]);
+      return res.json(Results[120]);
     } else if (req.body.categories.length === categoriesFromDB?.length) {
       /* 3. 한번에 갱신 */
 
@@ -85,7 +85,7 @@ updateCategory.post(
       return res.json(Results[0]);
     } else {
       /* 4. 그 외의 알 수 없는 요청 */
-      return res.json(Results[130]);
+      return res.json(Results[140]);
     }
   }
 );

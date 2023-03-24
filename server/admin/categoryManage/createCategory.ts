@@ -23,7 +23,7 @@ createCategory.post(
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
     if (!req.body.title) {
-      return res.json(Results[120]);
+      return res.json(Results[130]);
     }
 
     /* 1. 카테고리 존재 여부 */
@@ -38,7 +38,7 @@ createCategory.post(
 
     if (Array.isArray(categories) && categories.length > 0) {
       /* 2. 이미 존재하는 타이틀 */
-      return res.json(Results[100]);
+      return res.json(Results[110]);
     } else {
       /* 3. 없는 타이틀 */
       try {

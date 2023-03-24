@@ -24,7 +24,7 @@ logOut.post(
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
     if (!req.body.id) {
-      return res.json(Results[120]);
+      return res.json(Results[130]);
     }
 
     /* 1. 요청 헤더에 토큰 존재 여부 확인 */

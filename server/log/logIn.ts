@@ -34,7 +34,7 @@ logIn.post(
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
     if (!req.body.id || !req.body.password) {
-      return res.json(Results[120]);
+      return res.json(Results[130]);
     }
 
     const id: string = req.body.id;
@@ -72,7 +72,7 @@ logIn.post(
       if (password === user.PASSWORD) {
         /* 2-1-4. 가입대기 유저 */
         if (user.AUTH === 30) {
-          return res.json(Results[90]);
+          return res.json(Results[100]);
         }
 
         let accessToken = '';

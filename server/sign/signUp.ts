@@ -31,7 +31,7 @@ signUp.post(
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
     if (!req.body.id || !req.body.password) {
-      return res.json(Results[120]);
+      return res.json(Results[130]);
     }
 
     /* 1. 회원 존재 여부 확인 */
@@ -43,7 +43,7 @@ signUp.post(
     }
 
     if (Array.isArray(users) && users.length > 0) {
-      return res.json(Results[100]);
+      return res.json(Results[110]);
     } else {
       /* 2. 비밀번호 RSA 복호화 */
       let decrypted: string = '';
