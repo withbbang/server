@@ -5,9 +5,8 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 // 모듈 임포트
 import { Results } from '../../enums/Results';
 import { Category } from '../../types/Category';
-import { User } from '../../types/User';
 import { handleSql } from '../../modules/oracleSetting';
-import { SELECT_CATEGORIES, SELECT_USER } from '../../queries/select';
+import { SELECT_CATEGORIES } from '../../queries/select';
 
 /* Token 생성 및 검증용 key */
 const jwtKey = process.env.jwtKey as string;
@@ -34,14 +33,12 @@ categories.get(
     let decoded: JwtPayload | undefined = undefined;
     try {
       decoded = jwt.verify(token, jwtKey) as JwtPayload;
-    } catch (e: any) {
-      console.log('Error: ', e);
-    }
+    } catch (e: any) {}
 
-    /* 2 AUTH 설정 */
+    /* 3 AUTH 설정 */
     let auth: number | undefined = decoded && decoded.auth;
 
-    /* 3. 카테고리들 가져오기 */
+    /* 4. 카테고리들 가져오기 */
     let categories: null | Array<Category> = null;
     try {
       categories = await handleSql(SELECT_CATEGORIES({ auth }));
