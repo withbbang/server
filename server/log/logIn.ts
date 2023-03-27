@@ -111,8 +111,6 @@ logIn.post(
 
       /* 3. 유저 미존재 */
     } else {
-      res.clearCookie('atk');
-      res.clearCookie('rtk');
       return res.json(Results[30]);
     }
   }

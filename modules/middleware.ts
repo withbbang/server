@@ -12,10 +12,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 // 모듈 임포트
 import { cookieConfig } from '../config/config';
 import { SELECT_USER } from '../queries/select';
-import {
-  UPDATE_USER_ACCESS_TOKEN,
-  UPDATE_USER_LOGOUT
-} from '../queries/update';
+import { UPDATE_USER_ACCESS_TOKEN } from '../queries/update';
 import { User } from '../types/User';
 import { handleSql } from './oracleSetting';
 import { Results } from '../enums/Results';
@@ -100,8 +97,6 @@ async function handleVerifyATKMiddleware(
   if (req.headers.authorization) {
     token = req.headers.authorization.split('Bearer ')[1];
   } else {
-    res.clearCookie('atk');
-    res.clearCookie('rtk');
     return res.json(Results[40]);
   }
 
@@ -115,18 +110,6 @@ async function handleVerifyATKMiddleware(
       req.body.requiredRefresh = 'Y';
       return next();
     } else if (e.name === 'JsonWebTokenError') {
-      res.clearCookie('atk');
-      res.clearCookie('rtk');
-      try {
-        await handleSql(
-          UPDATE_USER_LOGOUT({
-            id: req.body.id
-          })
-        );
-      } catch (e: any) {
-        return next(new Error(e.stack));
-      }
-
       return res.json(Results[90]);
     } else {
       /* 6-2. 다른 에러일 경우 넘기기 */
@@ -152,15 +135,10 @@ async function handleVerifyATKMiddleware(
 
     /* 4-1. AccessToken 일치 확인 */
     if (accessToken !== token) {
-      res.clearCookie('atk');
-      res.clearCookie('rtk');
       return res.json(Results[60]);
     }
   } else {
     /* 5. 유저 미존재 */
-    //TODO: 쿠키는 삭제했지만 화면에서 인덱스 페이지로 리다이렉트 하지 않음. 방법 모색 필요
-    res.clearCookie('atk');
-    res.clearCookie('rtk');
     return res.json(Results[30]);
   }
 
@@ -192,8 +170,6 @@ async function handleVerifyRTKMiddleware(
   if (refresh) {
     refresh = refresh.split('Bearer ')[1];
   } else {
-    res.clearCookie('atk');
-    res.clearCookie('rtk');
     return res.json(Results[50]);
   }
 
@@ -216,14 +192,10 @@ async function handleVerifyRTKMiddleware(
 
     /* 5-1. RefreshToken 일치 확인 */
     if (refreshToken !== refresh) {
-      res.clearCookie('atk');
-      res.clearCookie('rtk');
       return res.json(Results[70]);
     }
   } else {
     /* 6. 유저 미존재 */
-    res.clearCookie('atk');
-    res.clearCookie('rtk');
     return res.json(Results[30]);
   }
 
@@ -232,18 +204,6 @@ async function handleVerifyRTKMiddleware(
     jwt.verify(refresh, jwtKey);
   } catch (e: any) {
     if (e.name === 'TokenExpiredError') {
-      res.clearCookie('atk');
-      res.clearCookie('rtk');
-      try {
-        await handleSql(
-          UPDATE_USER_LOGOUT({
-            id: id || users[0].ID
-          })
-        );
-      } catch (e: any) {
-        return next(new Error(e.stack));
-      }
-
       return res.json(Results[80]);
     } else {
       return next(new Error(e.stack));

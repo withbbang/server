@@ -6,6 +6,7 @@ import { log } from './log';
 import { sign } from './sign';
 import { admin } from './admin';
 import { common } from './common';
+import { force } from './force';
 import { error } from './error';
 import {
   handleVerifyATKMiddleware,
@@ -23,4 +24,5 @@ server.use(
   admin
 );
 server.use('/common', common);
+server.use('/force', force);
 server.use('/error', error);
