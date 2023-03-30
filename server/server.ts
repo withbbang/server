@@ -7,6 +7,7 @@ import { sign } from './sign';
 import { admin } from './admin';
 import { common } from './common';
 import { force } from './force';
+import { content } from './content';
 import { error } from './error';
 import {
   handleVerifyATKMiddleware,
@@ -25,4 +26,5 @@ server.use(
 );
 server.use('/common', common);
 server.use('/force', force);
+server.use('/contents', content);
 server.use('/error', error);

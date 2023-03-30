@@ -79,10 +79,38 @@ function SELECT_VISIT_COUNT() {
   return { query };
 }
 
+function SELECT_CONTENTS(params?: any) {
+  const { title, id } = params;
+  const query = `
+    SELECT
+      CO.ID
+      , CO.TITLE AS CONTENT_TITLE
+      , CA.TITLE AS CATEGORY_TITLE
+      , UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(CO.CONTENT, 3200, 1)) AS CONTENT
+      , PATH
+    FROM
+      CATEGORY CA
+      JOIN CONTENTS CO ON CA.ID = CO.CATEGORY_ID
+    WHERE
+      1 = 1
+      AND CO.IS_DONE = 'Y'
+      AND CO.IS_DELETED = 'N'
+      ${title ? 'AND CA.TITLE = :title' : ''}
+      AND AUTHORITY_AUTH >= ${
+        id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
+      }
+    ORDER BY
+      CO.CREATE_DT DESC
+  `;
+
+  return { query, params };
+}
+
 export {
   SELECT_VISITOR_IP,
   SELECT_USER,
   SELECT_ALL_CATEGORIES,
   SELECT_CATEGORIES,
-  SELECT_VISIT_COUNT
+  SELECT_VISIT_COUNT,
+  SELECT_CONTENTS
 };
