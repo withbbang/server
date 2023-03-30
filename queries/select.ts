@@ -51,7 +51,7 @@ function SELECT_ALL_CATEGORIES() {
 }
 
 function SELECT_CATEGORIES(params?: any) {
-  const { title, id, auth } = params;
+  const { title, id } = params;
   const query = `
     SELECT
       ID
@@ -62,9 +62,10 @@ function SELECT_CATEGORIES(params?: any) {
     WHERE
       1 = 1
       AND IS_DELETED = 'N'
-      ${id ? 'AND ID = :id' : ''}
       ${title ? 'AND TITLE = :title' : ''}
-      AND AUTHORITY_AUTH >= ${typeof auth === 'number' ? ':auth' : 20}
+      AND AUTHORITY_AUTH >= ${
+        id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
+      }
   `;
 
   return { query, params };

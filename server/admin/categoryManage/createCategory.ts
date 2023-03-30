@@ -30,7 +30,7 @@ createCategory.post(
     let categories: null | Array<Category> = null;
     try {
       categories = await handleSql(
-        SELECT_CATEGORIES({ title: req.body.title, auth: req.body.auth })
+        SELECT_CATEGORIES({ title: req.body.title })
       );
     } catch (e: any) {
       return next(new Error(e.stack));
