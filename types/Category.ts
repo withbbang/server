@@ -3,4 +3,5 @@ export interface Category {
   TITLE: string;
   PRIORITY: number;
   PATH: string;
+  DESCRIPTION: string;
 }

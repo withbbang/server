@@ -38,13 +38,16 @@ function SELECT_USER(params: any) {
 function SELECT_ALL_CATEGORIES() {
   const query = `
     SELECT
-      ID
-      , TITLE
-      , PRIORITY
+      CA.ID AS ID
+      , CA.TITLE AS TITLE
+      , CA.PRIORITY AS PRIORITY
+      , CA.PATH AS PATH
+      , AUTH.DESCRIPTION AS DESCRIPTION
     FROM
-      CATEGORY
+      CATEGORY CA
+      JOIN AUTHORITY AUTH ON CA.AUTHORITY_AUTH = AUTH.AUTH
     ORDER BY
-      PRIORITY ASC
+      CA.PRIORITY ASC
   `;
 
   return { query };
