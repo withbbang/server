@@ -1,15 +1,11 @@
 // 라이브러리 임포트
 import { NextFunction, Request, Response, Router } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // 모듈 임포트
 import { Results } from '../../enums/Results';
 import { Category } from '../../types/Category';
 import { handleSql } from '../../modules/oracleSetting';
 import { SELECT_CATEGORIES } from '../../queries/select';
-
-/* Token 생성 및 검증용 key */
-const jwtKey = process.env.jwtKey as string;
 
 export const categories: Router = Router();
 

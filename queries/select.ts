@@ -57,6 +57,7 @@ function SELECT_CATEGORIES(params?: any) {
       ID
       , TITLE
       , PRIORITY
+      , PATH
     FROM
       CATEGORY
     WHERE
@@ -83,11 +84,10 @@ function SELECT_CONTENTS(params?: any) {
   const { title, id } = params;
   const query = `
     SELECT
-      CO.ID
-      , CO.TITLE AS CONTENT_TITLE
-      , CA.TITLE AS CATEGORY_TITLE
+      CO.ID AS ID
+      , CO.TITLE AS TITLE
       , UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(CO.CONTENT, 3200, 1)) AS CONTENT
-      , PATH
+      , CO.PATH AS PATH
     FROM
       CATEGORY CA
       JOIN CONTENTS CO ON CA.ID = CO.CATEGORY_ID
