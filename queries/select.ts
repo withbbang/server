@@ -70,6 +70,8 @@ function SELECT_CATEGORIES(params?: any) {
       AND AUTHORITY_AUTH >= ${
         id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
       }
+    ORDER BY
+      PRIORITY
   `;
 
   return { query, params };
@@ -109,11 +111,20 @@ function SELECT_CONTENTS(params?: any) {
   return { query, params };
 }
 
+function SELECT_AUTHORITY() {
+  const query = `
+    SELECT AUTH, DESCRIPTION FROM AUTHORITY WHERE AUTH < 30 ORDER BY AUTH DESC
+  `;
+
+  return { query };
+}
+
 export {
   SELECT_VISITOR_IP,
   SELECT_USER,
   SELECT_ALL_CATEGORIES,
   SELECT_CATEGORIES,
   SELECT_VISIT_COUNT,
-  SELECT_CONTENTS
+  SELECT_CONTENTS,
+  SELECT_AUTHORITY
 };

@@ -22,7 +22,7 @@ createCategory.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    if (!req.body.title) {
+    if (!req.body.title || !req.body.id || !req.body.path) {
       return res.json(Results[130]);
     }
 
@@ -47,14 +47,23 @@ createCategory.post(
             title: req.body.title,
             priority: req.body.priority,
             create_dt: handleGetLocaleTime('db'),
-            create_user: req.body.id
+            id: req.body.id,
+            auth: req.body.auth,
+            path: req.body.path
           })
         );
       } catch (e: any) {
         return next(new Error(e.stack));
       }
-
-      return res.json(Results[0]);
     }
+
+    /* 4. 새로운 카테고리들 반환 */
+    try {
+      categories = await handleSql(SELECT_CATEGORIES());
+    } catch (e: any) {
+      return next(new Error(e.stack));
+    }
+
+    return res.json({ ...Results[0], categories });
   }
 );

@@ -16,13 +16,16 @@ function INSERT_USER(params: any) {
 }
 
 function INSERT_CATEGORY(params: any) {
-  const { title, priority, create_dt, create_user } = params;
+  const { title, priority, create_dt, id, auth, path } = params;
   const query = `
     INSERT INTO CATEGORY (
       TITLE
       , PRIORITY
       , CREATE_DT
       , CREATE_USER
+      , IS_DELETED
+      , AUTHORITY_AUTH
+      , PATH
     )
     VALUES (
       :title
@@ -32,7 +35,10 @@ function INSERT_CATEGORY(params: any) {
           : '(SELECT MAX(PRIORITY) + 1 FROM CATEGORY)'
       }
       , TO_DATE(:create_dt, 'YYYYMMDDHH24MISS')
-      , :create_user
+      , :id
+      , 'N'
+      , ${typeof auth === 'number' ? ':auth' : 20}
+      , :path
     )
   `;
 

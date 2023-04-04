@@ -129,6 +129,7 @@ async function handleVerifyUserMiddleware(
     /* 4. 유저 존재 */
     accessToken = users[0].ACCESS_TOKEN;
     refreshToken = users[0].REFRESH_TOKEN;
+    req.body.tempAuth = users[0].AUTH;
 
     /* 4-1. AccessToken 일치 확인 */
     if (accessToken !== token || refreshToken !== refresh) {
@@ -179,9 +180,6 @@ async function handleVerifyATKMiddleware(
     }
   }
 
-  req.body.id = decoded.id;
-  req.body.auth = decoded.auth;
-
   return next();
 }
 
@@ -224,14 +222,16 @@ async function handleVerifyRTKMiddleware(
   /* 8. AccessToken 재발급 */
   let accessToken = '';
   try {
-    accessToken = handleIssueAccessToken(req.body.id, req.body.auth);
+    accessToken = handleIssueAccessToken(req.body.id, req.body.tempAuth);
   } catch (e: any) {
     return next(new Error(e.stack));
   }
 
   /* 9. 유저 AccessToken DB 업데이트 */
   try {
-    await handleSql(UPDATE_USER_ACCESS_TOKEN({ accessToken, id: req.body.id }));
+    await handleSql(
+      UPDATE_USER_ACCESS_TOKEN({ accessToken, id: req.body.tempAuth })
+    );
   } catch (e: any) {
     return next(new Error(e.stack));
   }

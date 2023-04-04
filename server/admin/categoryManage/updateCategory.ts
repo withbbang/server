@@ -5,7 +5,10 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../../enums/Results';
 import { Category } from '../../../types/Category';
 import { handleMultipleSql, handleSql } from '../../../modules/oracleSetting';
-import { SELECT_ALL_CATEGORIES } from '../../../queries/select';
+import {
+  SELECT_ALL_CATEGORIES,
+  SELECT_CATEGORIES
+} from '../../../queries/select';
 import { UPDATE_CATEGORY } from '../../../queries/update';
 import { handleGetLocaleTime } from '../../../modules/common';
 
@@ -82,9 +85,17 @@ updateCategory.post(
         return next(new Error(e.stack));
       }
 
-      return res.json(Results[0]);
+      /* 4. 새로운 카테고리들 반환 */
+      let categories: null | Array<Category> = null;
+      try {
+        categories = await handleSql(SELECT_CATEGORIES());
+      } catch (e: any) {
+        return next(new Error(e.stack));
+      }
+
+      return res.json({ ...Results[0], categories });
     } else {
-      /* 4. 그 외의 알 수 없는 요청 */
+      /* 5. 그 외의 알 수 없는 요청 */
       return res.json(Results[140]);
     }
   }
