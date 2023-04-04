@@ -81,6 +81,68 @@ function handleErrorMiddleware(app: Express | Router): void {
 }
 
 /**
+ * User 검증 Middleware
+ * @param {Request} req Http Request
+ * @param {Response} res Http Response
+ * @param {NextFunction} next 다음 미들웨어로 넘기는 함수
+ * @returns {Promise<any>}
+ */
+async function handleVerifyUserMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<any> {
+  /* 0. 필수값 존재 확인 */
+  if (!req.body.id) {
+    return res.json(Results[130]);
+  }
+
+  const id = req.body.id;
+
+  /* 1. 요청 헤더에 토큰 존재 여부 확인 */
+  let token: string = '';
+  if (req.headers.authorization) {
+    token = req.headers.authorization.split('Bearer ')[1];
+  } else {
+    return res.json(Results[40]);
+  }
+
+  /* 2. 요청 헤더에 리프레시 토큰 존재 여부 확인 */
+  let refresh = req.headers.refresh as string | undefined;
+  if (refresh) {
+    refresh = refresh.split('Bearer ')[1];
+  } else {
+    return res.json(Results[50]);
+  }
+
+  /* 3. 회원 존재 여부 확인 */
+  let users: null | Array<User> = null;
+  try {
+    users = await handleSql(SELECT_USER({ id }));
+  } catch (e: any) {
+    return next(new Error(e.stack));
+  }
+
+  let accessToken: string | undefined = '';
+  let refreshToken: string | undefined = '';
+  if (Array.isArray(users) && users.length > 0) {
+    /* 4. 유저 존재 */
+    accessToken = users[0].ACCESS_TOKEN;
+    refreshToken = users[0].REFRESH_TOKEN;
+
+    /* 4-1. AccessToken 일치 확인 */
+    if (accessToken !== token || refreshToken !== refresh) {
+      return res.json(Results[60]);
+    }
+  } else {
+    /* 5. 유저 미존재 */
+    return res.json(Results[30]);
+  }
+
+  return next();
+}
+
+/**
  * AccessToken 검증 Middleware
  * @param {Request} req Http Request
  * @param {Response} res Http Response
@@ -106,41 +168,19 @@ async function handleVerifyATKMiddleware(
     decoded = jwt.verify(token, jwtKey) as jwt.JwtPayload;
   } catch (e: any) {
     if (e.name === 'TokenExpiredError') {
-      /* 6-1. 토큰 만료시 재발급 */
+      /* 2-1. 토큰 만료시 재발급 */
       req.body.requiredRefresh = 'Y';
       return next();
     } else if (e.name === 'JsonWebTokenError') {
       return res.json(Results[90]);
     } else {
-      /* 6-2. 다른 에러일 경우 넘기기 */
+      /* 2-2. 다른 에러일 경우 넘기기 */
       return next(new Error(e.stack));
     }
   }
 
-  /* 3. 회원 존재 여부 확인 */
-  let users: null | Array<User> = null;
-  try {
-    users = await handleSql(SELECT_USER({ id: req.body.id || decoded.id }));
-  } catch (e: any) {
-    return next(new Error(e.stack));
-  }
-
-  req.body.id = req.body.id || decoded.id;
+  req.body.id = decoded.id;
   req.body.auth = decoded.auth;
-
-  let accessToken: string | undefined = '';
-  if (Array.isArray(users) && users.length > 0) {
-    /* 4. 유저 존재 */
-    accessToken = users[0].ACCESS_TOKEN;
-
-    /* 4-1. AccessToken 일치 확인 */
-    if (accessToken !== token) {
-      return res.json(Results[60]);
-    }
-  } else {
-    /* 5. 유저 미존재 */
-    return res.json(Results[30]);
-  }
 
   return next();
 }
@@ -163,40 +203,11 @@ async function handleVerifyRTKMiddleware(
   }
 
   /* 2. 요청 헤더에 토큰 존재 여부 확인 */
-  const access: string = req.headers.authorization?.split(
-    'Bearer '
-  )[1] as string;
   let refresh = req.headers.refresh as string | undefined;
   if (refresh) {
     refresh = refresh.split('Bearer ')[1];
   } else {
     return res.json(Results[50]);
-  }
-
-  const id: string = req.body.id;
-
-  /* 4. 회원 존재 여부 확인 */
-  let users: null | Array<User> = null;
-  try {
-    users = await handleSql(
-      SELECT_USER({ id, accessToken: access, refreshToken: refresh })
-    );
-  } catch (e: any) {
-    return next(new Error(e.stack));
-  }
-
-  let refreshToken: string | undefined = '';
-  if (Array.isArray(users) && users.length > 0) {
-    /* 5. 유저 존재 */
-    refreshToken = users[0].REFRESH_TOKEN;
-
-    /* 5-1. RefreshToken 일치 확인 */
-    if (refreshToken !== refresh) {
-      return res.json(Results[70]);
-    }
-  } else {
-    /* 6. 유저 미존재 */
-    return res.json(Results[30]);
   }
 
   /* 7. 토큰 검증 */
@@ -213,23 +224,20 @@ async function handleVerifyRTKMiddleware(
   /* 8. AccessToken 재발급 */
   let accessToken = '';
   try {
-    accessToken = handleIssueAccessToken(id || users[0].ID, users[0].AUTH);
+    accessToken = handleIssueAccessToken(req.body.id, req.body.auth);
   } catch (e: any) {
     return next(new Error(e.stack));
   }
 
   /* 9. 유저 AccessToken DB 업데이트 */
   try {
-    await handleSql(
-      UPDATE_USER_ACCESS_TOKEN({ accessToken, id: id || users[0].ID })
-    );
+    await handleSql(UPDATE_USER_ACCESS_TOKEN({ accessToken, id: req.body.id }));
   } catch (e: any) {
     return next(new Error(e.stack));
   }
 
   /* 10. 쿠키설정 */
   res.cookie('atk', accessToken, cookieConfig);
-  req.headers.authorization = `Bearer ${accessToken}`;
 
   return next();
 }
@@ -239,6 +247,7 @@ export {
   handleRequestLogginMiddleware,
   handleResponseLogginMiddleware,
   handleErrorMiddleware,
+  handleVerifyUserMiddleware,
   handleVerifyATKMiddleware,
   handleVerifyRTKMiddleware
 };

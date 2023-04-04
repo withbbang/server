@@ -75,9 +75,9 @@ async function handleSql({ query, params }: SqlFuncType): Promise<any> {
     outFormat: oracledb.OUT_FORMAT_OBJECT // 쿼리 결과 포맷 (json 객체 형식)
   };
 
-  // undefined 값도 key에 바인딩 되기 때문에 제거해야함
+  // falsy 값도 key에 바인딩 되기 때문에 제거해야함
   for (let id in binds) {
-    if (binds[id] === undefined) delete binds[id];
+    if (!binds[id]) delete binds[id];
   }
 
   console.log(`SQL >>> ${query}`);

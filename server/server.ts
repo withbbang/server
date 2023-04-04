@@ -10,6 +10,7 @@ import { force } from './force';
 import { content } from './content';
 import { error } from './error';
 import {
+  handleVerifyUserMiddleware,
   handleVerifyATKMiddleware,
   handleVerifyRTKMiddleware
 } from '../modules/middleware';
@@ -20,6 +21,7 @@ server.use('/log', log);
 server.use('/sign', sign);
 server.use(
   '/admin',
+  handleVerifyUserMiddleware,
   handleVerifyATKMiddleware,
   handleVerifyRTKMiddleware,
   admin
