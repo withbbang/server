@@ -229,9 +229,7 @@ async function handleVerifyRTKMiddleware(
 
   /* 9. 유저 AccessToken DB 업데이트 */
   try {
-    await handleSql(
-      UPDATE_USER_ACCESS_TOKEN({ accessToken, id: req.body.tempAuth })
-    );
+    await handleSql(UPDATE_USER_ACCESS_TOKEN({ accessToken, id: req.body.id }));
   } catch (e: any) {
     return next(new Error(e.stack));
   }
