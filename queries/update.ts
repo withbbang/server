@@ -103,7 +103,7 @@ function UPDATE_CATEGORY(params?: any) {
     SET
       UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
       ${title ? ', TITLE = :title' : ''}
-      , PRIORITY = :priority
+      ${priority ? ', PRIORITY = :priority' : ''}
       , UPDATE_USER = :update_user
       ${auth ? ', AUTHORITY_AUTH = :auth' : ''}
       ${path ? ', PATH = :path' : ''}

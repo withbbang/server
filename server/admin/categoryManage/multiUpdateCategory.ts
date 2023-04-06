@@ -61,7 +61,6 @@ multiupdateCategory.post(
       }
 
       /* 3-3. 다중 갱신 */
-      const { query } = UPDATE_CATEGORY();
       const params = toBeData.map((data: Category) => {
         return {
           priority: data.PRIORITY,
@@ -70,6 +69,7 @@ multiupdateCategory.post(
           categoryId: data.ID
         };
       });
+      const { query } = UPDATE_CATEGORY(params[0]);
 
       try {
         await handleMultipleSql(query, params);
