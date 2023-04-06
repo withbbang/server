@@ -25,7 +25,7 @@ singleUpdateCategory.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    const { title, id, path, categoryId, auth } = req.body;
+    const { title, id, path, categoryId, auth, priority } = req.body;
     if (handleCheckRequired({ title, id, path, categoryId, auth })) {
       return res.json(Results[130]);
     }
@@ -59,7 +59,8 @@ singleUpdateCategory.post(
               update_user: id,
               auth,
               path,
-              categoryId
+              categoryId,
+              priority
             })
           );
         } catch (e: any) {

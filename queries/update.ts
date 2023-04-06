@@ -91,18 +91,22 @@ function UPDATE_USER_WITHDRAW(params: any) {
 }
 
 function UPDATE_CATEGORY(params?: any) {
-  const { title, priority, update_dt, update_user, auth, path, categoryId } =
-    params;
+  // 구조분해 할당 먼저 선언하는 방법
+  let title, priority, update_dt, update_user, auth, path, categoryId;
+  params &&
+    ({ title, priority, update_dt, update_user, auth, path, categoryId } =
+      params);
+
   const query = `
     UPDATE
       CATEGORY
     SET
-      TITLE = :title
-      ${priority ? ', PRIORITY = :priority' : ''}
-      , UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
+      UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
+      ${title ? ', TITLE = :title' : ''}
+      , PRIORITY = :priority
       , UPDATE_USER = :update_user
-      , AUTHORITY_AUTH = :auth
-      , PATH = :path
+      ${auth ? ', AUTHORITY_AUTH = :auth' : ''}
+      ${path ? ', PATH = :path' : ''}
     WHERE
       ID = :categoryId
   `;

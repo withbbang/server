@@ -10,15 +10,18 @@ import {
   SELECT_CATEGORIES
 } from '../../../queries/select';
 import { UPDATE_CATEGORY } from '../../../queries/update';
-import { handleGetLocaleTime } from '../../../modules/common';
+import {
+  handleCheckRequired,
+  handleGetLocaleTime
+} from '../../../modules/common';
 
-export const updateCategory: Router = Router();
+export const multiupdateCategory: Router = Router();
 
 /**
  * 카테고리 갱신
  * 모든 리스트 한번에 갱신
  */
-updateCategory.post(
+multiupdateCategory.post(
   '/',
   async function (
     req: Request,
@@ -26,7 +29,8 @@ updateCategory.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    if (!req.body.categories) {
+    const { id, categories } = req.body;
+    if (handleCheckRequired({ id, categories })) {
       return res.json(Results[130]);
     }
 
@@ -38,27 +42,16 @@ updateCategory.post(
       return next(new Error(e.stack));
     }
 
-    if (req.body.categories.length < 1) {
+    if (categories.length < 1) {
       /* 2. 화면에서 넘어온 데이터가 없을 경우 */
       return res.json(Results[120]);
-    } else if (req.body.categories.length === categoriesFromDB?.length) {
+    } else if (categories.length === categoriesFromDB?.length) {
       /* 3. 한번에 갱신 */
 
-      /* 3-1. 오름차순 정렬 */
-      const categoriesFromClient: Array<Category> = req.body.categories.sort(
-        (a: Category, b: Category) => a.ID - b.ID
-      );
-      categoriesFromDB = categoriesFromDB.sort(
-        (a: Category, b: Category) => a.ID - b.ID
-      );
-
       /* 3-2. 비교값 중 다른게 있을 경우만 갱신 */
-      const toBeData: Array<Category> = categoriesFromClient.filter(
-        (category, idx) => {
-          return (
-            category.TITLE !== categoriesFromDB[idx].TITLE ||
-            category.PRIORITY !== categoriesFromDB[idx].PRIORITY
-          );
+      const toBeData: Array<Category> = req.body.categories.filter(
+        (category: Category, idx: number) => {
+          return category.ID !== categoriesFromDB[idx].ID;
         }
       );
 
@@ -71,11 +64,10 @@ updateCategory.post(
       const { query } = UPDATE_CATEGORY();
       const params = toBeData.map((data: Category) => {
         return {
-          id: data.ID,
-          title: data.TITLE,
           priority: data.PRIORITY,
           update_dt: handleGetLocaleTime('db'),
-          update_user: req.body.id
+          update_user: id,
+          categoryId: data.ID
         };
       });
 
@@ -88,7 +80,7 @@ updateCategory.post(
       /* 4. 새로운 카테고리들 반환 */
       let categories: null | Array<Category> = null;
       try {
-        categories = await handleSql(SELECT_CATEGORIES());
+        categories = await handleSql(SELECT_CATEGORIES({ id }));
       } catch (e: any) {
         return next(new Error(e.stack));
       }

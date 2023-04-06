@@ -47,8 +47,10 @@ function SELECT_ALL_CATEGORIES() {
     FROM
       CATEGORY CA
       JOIN AUTHORITY AUTH ON CA.AUTHORITY_AUTH = AUTH.AUTH
+    WHERE
+      CA.IS_DELETED = 'N'
     ORDER BY
-      CA.PRIORITY ASC
+      CA.PRIORITY
   `;
 
   return { query };
