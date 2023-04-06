@@ -90,18 +90,21 @@ function UPDATE_USER_WITHDRAW(params: any) {
   return { query, params };
 }
 
-function UPDATE_CATEGORY(params: any = {}) {
-  const { id, title, priority, update_dt, update_user } = params;
+function UPDATE_CATEGORY(params?: any) {
+  const { title, priority, update_dt, update_user, auth, path, categoryId } =
+    params;
   const query = `
     UPDATE
       CATEGORY
     SET
       TITLE = :title
-      , PRIORITY = :priority
+      ${priority ? ', PRIORITY = :priority' : ''}
       , UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
       , UPDATE_USER = :update_user
+      , AUTHORITY_AUTH = :auth
+      , PATH = :path
     WHERE
-      ID = :id
+      ID = :categoryId
   `;
 
   return { query, params };

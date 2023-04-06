@@ -65,6 +65,17 @@ function handleGetLocaleTime(type: string = 'date'): string {
   else return moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
 }
 
+/**
+ * 필수값 여부 확인 함수
+ * @param {any} body req.body 파라미터
+ * @returns {boolean}
+ */
+function handleCheckRequired(body?: any): boolean {
+  return Object.entries(body).some(
+    ([key, value]) => value === undefined || value === null || value === ''
+  );
+}
+
 // catch 절 함수
 function handleCatchClause(
   e: any,
@@ -74,4 +85,4 @@ function handleCatchClause(
   throw new Error(e.stack);
 }
 
-export { handleCheckTodayVisit, handleGetLocaleTime };
+export { handleCheckTodayVisit, handleGetLocaleTime, handleCheckRequired };

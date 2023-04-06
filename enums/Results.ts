@@ -27,7 +27,8 @@ const Results = Object.freeze({
   110: { code: '000110', message: '이미 존재하는 데이터' },
   120: { code: '000120', message: '존재하지 않는 데이터' },
   130: { code: '000130', message: '필수값 부재' },
-  140: { code: '000140', message: '부적절한 요청' }
+  140: { code: '000140', message: '부적절한 요청' },
+  150: { code: '000150', message: '수정될 값이 없는 요청' }
 });
 
 export { Results };

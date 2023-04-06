@@ -7,7 +7,10 @@ import { Category } from '../../../types/Category';
 import { handleSql } from '../../../modules/oracleSetting';
 import { SELECT_CATEGORIES } from '../../../queries/select';
 import { INSERT_CATEGORY } from '../../../queries/insert';
-import { handleGetLocaleTime } from '../../../modules/common';
+import {
+  handleCheckRequired,
+  handleGetLocaleTime
+} from '../../../modules/common';
 
 export const createCategory: Router = Router();
 
@@ -22,16 +25,15 @@ createCategory.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    if (!req.body.title || !req.body.id || !req.body.path) {
+    const { title, id, path } = req.body;
+    if (handleCheckRequired({ title, id, path })) {
       return res.json(Results[130]);
     }
 
     /* 1. 카테고리 존재 여부 */
     let categories: null | Array<Category> = null;
     try {
-      categories = await handleSql(
-        SELECT_CATEGORIES({ title: req.body.title })
-      );
+      categories = await handleSql(SELECT_CATEGORIES({ title }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -44,12 +46,12 @@ createCategory.post(
       try {
         await handleSql(
           INSERT_CATEGORY({
-            title: req.body.title,
+            title,
             priority: req.body.priority,
             create_dt: handleGetLocaleTime('db'),
-            id: req.body.id,
+            id,
             auth: req.body.auth,
-            path: req.body.path
+            path
           })
         );
       } catch (e: any) {
@@ -59,7 +61,7 @@ createCategory.post(
 
     /* 4. 새로운 카테고리들 반환 */
     try {
-      categories = await handleSql(SELECT_CATEGORIES());
+      categories = await handleSql(SELECT_CATEGORIES({ id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
