@@ -13,14 +13,14 @@ import {
   handleCheckRequired,
   handleGetLocaleTime
 } from '../../../modules/common';
-import { UPDATE_CATEGORY } from '../../../queries/update';
+import { UPDATE_DELETE_RESTORE_CATEGORY } from '../../../queries/update';
 
-export const singleUpdateCategory: Router = Router();
+export const deleteRestoreCategory: Router = Router();
 
 /**
- * 카테고리 1개 수정
+ * 카테고리 1개 삭제
  */
-singleUpdateCategory.post(
+deleteRestoreCategory.post(
   '/',
   async function (
     req: Request,
@@ -28,8 +28,8 @@ singleUpdateCategory.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    const { isDeleted, title, id, path, categoryId, auth, priority } = req.body;
-    if (handleCheckRequired({ isDeleted, title, id, path, categoryId, auth })) {
+    const { id, categoryId, isDeleted } = req.body;
+    if (handleCheckRequired({ id, categoryId, isDeleted })) {
       return res.json(Results[130]);
     }
 
@@ -37,35 +37,28 @@ singleUpdateCategory.post(
     let categories: null | Array<Category> = null;
     try {
       categories = await handleSql(
-        SELECT_CATEGORIES({ isDeleted, categoryId })
+        SELECT_CATEGORIES({ id, categoryId, isDeleted })
       );
     } catch (e: any) {
       return next(new Error(e.stack));
     }
 
     if (Array.isArray(categories) && categories.length > 0) {
-      /* 2. 카테고리 있을 경우 값들 비교 */
+      /* 2. 카테고리 있을 경우 값 비교 */
       const category: Category = categories[0];
 
-      /* 2-1. 요청값이 모두 동일할 경우 */
-      if (
-        title === category.TITLE &&
-        path === category.PATH &&
-        auth === category.AUTH
-      ) {
-        return res.json(Results[150]);
-      } else {
-        /* 2-2. 요청값이 하나라도 다를 경우 */
+      /* 2-1. 요청값이 동일할 경우 */
+      if (category.IS_DELETED === isDeleted) {
         try {
+          const date = handleGetLocaleTime('db');
           await handleSql(
-            UPDATE_CATEGORY({
-              title,
-              update_dt: handleGetLocaleTime('db'),
+            UPDATE_DELETE_RESTORE_CATEGORY({
+              isDeleted: isDeleted === 'Y' ? 'N' : 'Y',
+              update_dt: date,
+              delete_dt: date,
               update_user: id,
-              auth,
-              path,
-              categoryId,
-              priority
+              delete_user: id,
+              categoryId
             })
           );
         } catch (e: any) {
@@ -80,6 +73,9 @@ singleUpdateCategory.post(
         }
 
         return res.json({ ...Results[0], categories });
+      } else {
+        /* 2-2. 요청값이 다를 경우 */
+        return res.json(Results[150]);
       }
     } else {
       /* 3. 카테고리 없을 경우 반환 */

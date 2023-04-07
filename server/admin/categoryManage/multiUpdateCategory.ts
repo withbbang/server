@@ -80,7 +80,7 @@ multiupdateCategory.post(
       /* 4. 새로운 카테고리들 반환 */
       let categories: null | Array<Category> = null;
       try {
-        categories = await handleSql(SELECT_CATEGORIES({ id }));
+        categories = await handleSql(SELECT_ALL_CATEGORIES());
       } catch (e: any) {
         return next(new Error(e.stack));
       }

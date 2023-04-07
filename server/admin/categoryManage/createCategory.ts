@@ -5,7 +5,10 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../../enums/Results';
 import { Category } from '../../../types/Category';
 import { handleSql } from '../../../modules/oracleSetting';
-import { SELECT_CATEGORIES } from '../../../queries/select';
+import {
+  SELECT_ALL_CATEGORIES,
+  SELECT_CATEGORIES
+} from '../../../queries/select';
 import { INSERT_CATEGORY } from '../../../queries/insert';
 import {
   handleCheckRequired,
@@ -61,7 +64,7 @@ createCategory.post(
 
     /* 4. 새로운 카테고리들 반환 */
     try {
-      categories = await handleSql(SELECT_CATEGORIES({ id }));
+      categories = await handleSql(SELECT_ALL_CATEGORIES());
     } catch (e: any) {
       return next(new Error(e.stack));
     }

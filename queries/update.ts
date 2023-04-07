@@ -114,6 +114,31 @@ function UPDATE_CATEGORY(params?: any) {
   return { query, params };
 }
 
+function UPDATE_DELETE_RESTORE_CATEGORY(params?: any) {
+  const {
+    isDeleted,
+    update_dt,
+    delete_dt,
+    update_user,
+    delete_user,
+    categoryId
+  } = params;
+  const query = `
+    UPDATE
+      CATEGORY
+    SET
+      IS_DELETED = :isDeleted
+      , UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
+      , DELETE_DT = TO_DATE(:delete_dt, 'YYYYMMDDHH24MISS')
+      , UPDATE_USER = :update_user
+      , DELETE_USER = :delete_user
+    WHERE
+      ID = :categoryId
+  `;
+
+  return { query, params };
+}
+
 export {
   UPDATE_INCREMENT_VISITHISTORY,
   UPDATE_INITIATE_TOTAY_VISITHISTORY,
@@ -121,5 +146,6 @@ export {
   UPDATE_USER_ACCESS_TOKEN,
   UPDATE_USER_LOGOUT,
   UPDATE_USER_WITHDRAW,
-  UPDATE_CATEGORY
+  UPDATE_CATEGORY,
+  UPDATE_DELETE_RESTORE_CATEGORY
 };

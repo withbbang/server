@@ -43,12 +43,11 @@ function SELECT_ALL_CATEGORIES() {
       , CA.PRIORITY AS PRIORITY
       , CA.PATH AS PATH
       , AUTH.DESCRIPTION AS DESCRIPTION
+      , IS_DELETED AS IS_DELETED
       , AUTH.AUTH AS AUTH
     FROM
       CATEGORY CA
       JOIN AUTHORITY AUTH ON CA.AUTHORITY_AUTH = AUTH.AUTH
-    WHERE
-      CA.IS_DELETED = 'N'
     ORDER BY
       CA.PRIORITY
   `;
@@ -58,8 +57,8 @@ function SELECT_ALL_CATEGORIES() {
 
 function SELECT_CATEGORIES(params?: any) {
   // 구조분해 할당 먼저 선언하는 방법
-  let title, id, categoryId;
-  params && ({ title, id, categoryId } = params);
+  let title, id, categoryId, isDeleted;
+  params && ({ title, id, categoryId, isDeleted } = params);
 
   const query = `
     SELECT
@@ -68,13 +67,14 @@ function SELECT_CATEGORIES(params?: any) {
       , CA.PRIORITY AS PRIORITY
       , CA.PATH AS PATH
       , AUTH.DESCRIPTION AS DESCRIPTION
+      , CA.IS_DELETED AS IS_DELETED
       , AUTH.AUTH AS AUTH
     FROM
       CATEGORY CA
       JOIN AUTHORITY AUTH ON CA.AUTHORITY_AUTH = AUTH.AUTH
     WHERE
       1 = 1
-      AND CA.IS_DELETED = 'N'
+      AND CA.IS_DELETED = ${isDeleted ? ':isDeleted' : "'N'"}
       ${title ? 'AND CA.TITLE = :title' : ''}
       AND CA.AUTHORITY_AUTH >= ${
         id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
