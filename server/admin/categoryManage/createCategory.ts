@@ -36,7 +36,7 @@ createCategory.post(
     /* 1. 카테고리 존재 여부 */
     let categories: null | Array<Category> = null;
     try {
-      categories = await handleSql(SELECT_CATEGORIES({ title }));
+      categories = await handleSql(SELECT_CATEGORIES({ title, id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }

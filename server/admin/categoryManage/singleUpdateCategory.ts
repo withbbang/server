@@ -37,7 +37,7 @@ singleUpdateCategory.post(
     let categories: null | Array<Category> = null;
     try {
       categories = await handleSql(
-        SELECT_CATEGORIES({ isDeleted, categoryId })
+        SELECT_CATEGORIES({ isDeleted, id, categoryId })
       );
     } catch (e: any) {
       return next(new Error(e.stack));
