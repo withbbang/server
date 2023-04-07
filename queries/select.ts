@@ -96,7 +96,7 @@ function SELECT_VISIT_COUNT() {
 }
 
 function SELECT_CONTENTS(params?: any) {
-  const { title, id } = params;
+  const { path, id } = params;
   const query = `
     SELECT
       CO.ID AS ID
@@ -110,7 +110,7 @@ function SELECT_CONTENTS(params?: any) {
       1 = 1
       AND CO.IS_DONE = 'Y'
       AND CO.IS_DELETED = 'N'
-      ${title ? 'AND CA.TITLE = :title' : ''}
+      ${path ? 'AND CA.PATH = :path' : ''}
       AND AUTHORITY_AUTH >= ${
         id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
       }

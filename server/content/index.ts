@@ -17,12 +17,12 @@ content.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     const id: string | undefined = req.body.id;
-    const title: string | undefined = req.body.title;
+    const path: string | undefined = req.body.path;
 
     /* 1. 컨텐츠 목록 조회 */
     let contents: null | Array<Content> = null;
     try {
-      contents = await handleSql(SELECT_CONTENTS({ title, id }));
+      contents = await handleSql(SELECT_CONTENTS({ path, id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
