@@ -55,9 +55,9 @@ deleteRestoreCategory.post(
             UPDATE_DELETE_RESTORE_CATEGORY({
               isDeleted: isDeleted === 'Y' ? 'N' : 'Y',
               update_dt: date,
-              delete_dt: date,
+              delete_dt: isDeleted === 'Y' ? null : date,
               update_user: id,
-              delete_user: id,
+              delete_user: isDeleted === 'Y' ? null : id,
               categoryId
             })
           );

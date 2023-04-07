@@ -77,8 +77,7 @@ async function handleSql({ query, params }: SqlFuncType): Promise<any> {
 
   // falsy 값도 key에 바인딩 되기 때문에 제거해야함 (0, false 제외)
   for (let id in binds) {
-    if (binds[id] === undefined || binds[id] === null || binds[id] === '')
-      delete binds[id];
+    if (binds[id] === undefined || binds[id] === '') delete binds[id];
   }
 
   console.log(`SQL >>> ${query}`);
