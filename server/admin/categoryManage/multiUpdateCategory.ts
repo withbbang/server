@@ -5,10 +5,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../../enums/Results';
 import { Category } from '../../../types/Category';
 import { handleMultipleSql, handleSql } from '../../../modules/oracleSetting';
-import {
-  SELECT_ALL_CATEGORIES,
-  SELECT_CATEGORIES
-} from '../../../queries/select';
+import { SELECT_ALL_CATEGORIES } from '../../../queries/select';
 import { UPDATE_CATEGORY } from '../../../queries/update';
 import {
   handleCheckRequired,

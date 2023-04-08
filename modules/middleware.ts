@@ -16,7 +16,7 @@ import { UPDATE_USER_ACCESS_TOKEN } from '../queries/update';
 import { User } from '../types/User';
 import { handleSql } from './oracleSetting';
 import { Results } from '../enums/Results';
-import { handleIssueAccessToken, handleVerifyToken } from './jwt';
+import { handleIssueAccessToken } from './jwt';
 
 /* Token 생성 및 검증용 key */
 const jwtKey = process.env.jwtKey as string;
