@@ -19,7 +19,7 @@ contents.post(
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
-    /* 1. 카테고리들 가져오기 */
+    /* 1. 컨텐츠 가져오기 */
     let contents: null | Array<Content> = null;
     try {
       contents = await handleSql(SELECT_ALL_CONTENTS());

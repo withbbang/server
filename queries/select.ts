@@ -145,6 +145,29 @@ function SELECT_CONTENTS(params?: any) {
   return { query, params };
 }
 
+function SELECT_CONTENT_BY_ADMINISTRATOR(params?: any) {
+  const { id, contentId } = params;
+  const query = `
+    SELECT
+      TITLE AS TITLE
+      , UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(CONTENT)) AS CONTENT
+      , HIT AS HIT
+      , HEART AS HEART
+      , CREATE_DT AS CREATE_DT
+      , UPDATE_DT AS UPDATE_DT
+    FROM
+      CONTENT
+    WHERE
+      1 = 1
+      AND AUTHORITY_AUTH >= ${
+        id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
+      }
+      AND ID = :contentId
+  `;
+
+  return { query, params };
+}
+
 function SELECT_AUTHORITY() {
   const query = `
     SELECT AUTH, DESCRIPTION FROM AUTHORITY WHERE AUTH < 30 ORDER BY AUTH DESC
@@ -161,5 +184,6 @@ export {
   SELECT_VISIT_COUNT,
   SELECT_ALL_CONTENTS,
   SELECT_CONTENTS,
+  SELECT_CONTENT_BY_ADMINISTRATOR,
   SELECT_AUTHORITY
 };
