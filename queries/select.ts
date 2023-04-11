@@ -95,6 +95,30 @@ function SELECT_VISIT_COUNT() {
   return { query };
 }
 
+function SELECT_ALL_CONTENTS(params?: any) {
+  const query = `
+    SELECT
+      CO.ID AS ID
+      , CO.TITLE AS TITLE
+      , UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(CO.CONTENT, 3200, 1)) AS CONTENT
+      , CO.HIT AS HIT
+      , CO.HEART AS HEART
+      , CO.CREATE_DT AS CREATE_DT
+      , CO.UPDATE_DT AS UPDATE_DT
+      , CO.IS_DONE AS IS_DONE
+      , CO.IS_DELETED AS IS_DELETED
+      , CO.PATH AS PATH
+      , CA.AUTHORITY_AUTH AS AUTH
+    FROM
+      CATEGORY CA
+      JOIN CONTENTS CO ON CA.ID = CO.CATEGORY_ID
+    ORDER BY
+      CO.CREATE_DT DESC
+  `;
+
+  return { query };
+}
+
 function SELECT_CONTENTS(params?: any) {
   const { path, id } = params;
   const query = `
@@ -135,6 +159,7 @@ export {
   SELECT_ALL_CATEGORIES,
   SELECT_CATEGORIES,
   SELECT_VISIT_COUNT,
+  SELECT_ALL_CONTENTS,
   SELECT_CONTENTS,
   SELECT_AUTHORITY
 };
