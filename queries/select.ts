@@ -120,7 +120,8 @@ function SELECT_ALL_CONTENTS(params?: any) {
 }
 
 function SELECT_CONTENTS(params?: any) {
-  const { path, id } = params;
+  let path, id, title;
+  params && ({ path, id, title } = params);
   const query = `
     SELECT
       CO.ID AS ID
@@ -138,6 +139,7 @@ function SELECT_CONTENTS(params?: any) {
       AND AUTHORITY_AUTH >= ${
         id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
       }
+      ${title ? 'AND CO.TITLE = :title' : ''}
     ORDER BY
       CO.CREATE_DT DESC
   `;

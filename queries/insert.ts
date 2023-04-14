@@ -45,4 +45,30 @@ function INSERT_CATEGORY(params: any) {
   return { query, params };
 }
 
-export { INSERT_TODAY_VISITOR_IP, INSERT_USER, INSERT_CATEGORY };
+function INSERT_CONTENT(params: any) {
+  const { categoryId, title, content, id, create_dt } = params;
+  const query = `
+    INSERT INTO CATEGORY (
+      CATEGORY_ID
+      , TITLE
+      , CONTENT
+      , CREATE_USER
+      , CREATE_DT
+    ) VALUES (
+        :categoryId
+        , :title
+        , TODO: 이부분에 string to blob 형태로 어떻게 넣는지 찾아볼것
+        , :id
+        , TO_DATE(:create_dt, 'YYYYMMDDHH24MISS')
+    )
+  `;
+
+  return { query, params };
+}
+
+export {
+  INSERT_TODAY_VISITOR_IP,
+  INSERT_USER,
+  INSERT_CATEGORY,
+  INSERT_CONTENT
+};
