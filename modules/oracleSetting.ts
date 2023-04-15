@@ -1,4 +1,7 @@
+// 라이브러리 임포트
 import oracledb from 'oracledb';
+
+// 모듈 임포트
 import { SqlFuncType } from '../types/SqlFuncType';
 
 /**

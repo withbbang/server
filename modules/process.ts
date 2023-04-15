@@ -1,3 +1,4 @@
+// 모듈 임포트
 import { handleClosePoolAndExit } from './oracleSetting';
 
 /**

@@ -1,3 +1,4 @@
+// 라이브러리 임포트
 import crypto, { generateKeyPairSync } from 'crypto';
 
 /**

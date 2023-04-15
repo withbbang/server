@@ -1,4 +1,7 @@
+// 라이브러리 임포트
 import { Request, Response, Router } from 'express';
+
+// 모듈 임포트
 import { publicKey } from '../../modules/crypto';
 import { Results } from '../../enums/Results';
 import { visitCount } from './visitCount';

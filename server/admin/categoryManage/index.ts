@@ -1,4 +1,7 @@
+// 라이브러리 임포트
 import { Router } from 'express';
+
+// 모듈 임포트
 import { categories } from './categories';
 import { createCategory } from './createCategory';
 import { singleUpdateCategory } from './singleUpdateCategory';
