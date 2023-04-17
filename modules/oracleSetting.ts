@@ -100,6 +100,8 @@ async function handleSql({ query, params }: SqlFuncType): Promise<any> {
     await handleReleaseConnection(connection);
   }
 
+  oracledb.fetchAsString = [oracledb.CLOB];
+
   typeof result?.rows?.length === 'number' &&
     console.log(`Total >>> ${result?.rows?.length}`);
 

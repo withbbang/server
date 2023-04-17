@@ -33,7 +33,7 @@ createContent.post(
     /* 1. 컨텐트 존재 여부 */
     let contents: null | Array<Content> = null;
     try {
-      contents = await handleSql(SELECT_CONTENTS({ title }));
+      contents = await handleSql(SELECT_CONTENTS({ title, isDone: 1 }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -58,13 +58,6 @@ createContent.post(
       }
     }
 
-    /* 4. 새로운 카테고리들 반환 */
-    try {
-      contents = await handleSql(SELECT_ALL_CONTENTS());
-    } catch (e: any) {
-      return next(new Error(e.stack));
-    }
-
-    return res.json({ ...Results[0], contents });
+    return res.json({ ...Results[0] });
   }
 );

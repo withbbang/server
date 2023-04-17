@@ -100,7 +100,7 @@ function SELECT_ALL_CONTENTS(params?: any) {
     SELECT
       CO.ID AS ID
       , CO.TITLE AS TITLE
-      , UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(CO.CONTENT, 3200, 1)) AS CONTENT
+      , SUBSTR(CONTENT, 1, 300) AS CONTENT
       , CO.HIT AS HIT
       , CO.HEART AS HEART
       , CO.CREATE_DT AS CREATE_DT
@@ -120,20 +120,20 @@ function SELECT_ALL_CONTENTS(params?: any) {
 }
 
 function SELECT_CONTENTS(params?: any) {
-  let path, id, title;
-  params && ({ path, id, title } = params);
+  let path, id, title, isDone;
+  params && ({ path, id, title, isDone } = params);
   const query = `
     SELECT
       CO.ID AS ID
       , CO.TITLE AS TITLE
-      , UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(CO.CONTENT, 3200, 1)) AS CONTENT
+      , CO.CONTENT AS CONTENT
       , CO.PATH AS PATH
     FROM
       CATEGORY CA
       JOIN CONTENTS CO ON CA.ID = CO.CATEGORY_ID
     WHERE
       1 = 1
-      AND CO.IS_DONE = 'Y'
+      ${isDone ? '' : "AND CO.IS_DONE = 'Y'"}
       AND CO.IS_DELETED = 'N'
       ${path ? 'AND CA.PATH = :path' : ''}
       AND AUTHORITY_AUTH >= ${
@@ -151,20 +151,23 @@ function SELECT_CONTENT_BY_ADMINISTRATOR(params?: any) {
   const { id, contentId } = params;
   const query = `
     SELECT
-      TITLE AS TITLE
-      , UTL_RAW.CAST_TO_VARCHAR2(DBMS_LOB.SUBSTR(CONTENT)) AS CONTENT
-      , HIT AS HIT
-      , HEART AS HEART
-      , CREATE_DT AS CREATE_DT
-      , UPDATE_DT AS UPDATE_DT
+      CO.ID AS ID
+      , CO.CATEGORY_ID AS CATEGORY_ID
+      , CO.TITLE AS TITLE
+      , CO.CONTENT AS CONTENT
+      , CO.HIT AS HIT
+      , CO.HEART AS HEART
+      , CO.CREATE_DT AS CREATE_DT
+      , CO.UPDATE_DT AS UPDATE_DT
     FROM
-      CONTENT
+      CATEGORY CA
+      JOIN CONTENTS CO ON CA.ID = CO.CATEGORY_ID
     WHERE
       1 = 1
-      AND AUTHORITY_AUTH >= ${
+      AND CA.AUTHORITY_AUTH >= ${
         id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
       }
-      AND ID = :contentId
+      AND CO.ID = :contentId
   `;
 
   return { query, params };

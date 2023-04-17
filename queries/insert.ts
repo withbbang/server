@@ -48,18 +48,18 @@ function INSERT_CATEGORY(params: any) {
 function INSERT_CONTENT(params: any) {
   const { categoryId, title, content, id, create_dt } = params;
   const query = `
-    INSERT INTO CATEGORY (
+    INSERT INTO CONTENTS (
       CATEGORY_ID
       , TITLE
       , CONTENT
       , CREATE_USER
       , CREATE_DT
     ) VALUES (
-        :categoryId
-        , :title
-        , TODO: 이부분에 string to blob 형태로 어떻게 넣는지 찾아볼것
-        , :id
-        , TO_DATE(:create_dt, 'YYYYMMDDHH24MISS')
+      :categoryId
+      , :title
+      , :content
+      , :id
+      , TO_DATE(:create_dt, 'YYYYMMDDHH24MISS')
     )
   `;
 
