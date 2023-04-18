@@ -46,6 +46,7 @@ function SELECT_CONTENTS(params?: any) {
     WHERE
         1 = 1
         AND CA.IS_DELETED = 'N'
+        AND CO.IS_DONE = 'Y'
         AND CO.IS_DELETED = 'N'
         AND AUTHORITY_AUTH >= ${
           id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
