@@ -5,7 +5,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../../enums/Results';
 import { Category } from '../../../types/Category';
 import { handleSql } from '../../../modules/oracleSetting';
-import { SELECT_ALL_CATEGORIES } from '../../../queries/select';
+import { SELECT_ALL_CATEGORIES } from '../../../queries/admin/categoryManage';
 
 export const categories: Router = Router();
 

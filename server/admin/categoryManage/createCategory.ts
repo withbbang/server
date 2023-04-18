@@ -7,9 +7,9 @@ import { Category } from '../../../types/Category';
 import { handleSql } from '../../../modules/oracleSetting';
 import {
   SELECT_ALL_CATEGORIES,
-  SELECT_CATEGORIES
-} from '../../../queries/select';
-import { INSERT_CATEGORY } from '../../../queries/insert';
+  SELECT_CATEGORIES_BY_TITLE,
+  INSERT_CATEGORY
+} from '../../../queries/admin/categoryManage';
 import {
   handleCheckRequired,
   handleGetLocaleTime
@@ -36,7 +36,7 @@ createCategory.post(
     /* 1. 카테고리 존재 여부 */
     let categories: null | Array<Category> = null;
     try {
-      categories = await handleSql(SELECT_CATEGORIES({ title, id }));
+      categories = await handleSql(SELECT_CATEGORIES_BY_TITLE({ title }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }

@@ -5,7 +5,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { VisitCount } from '../../types/VisitCount';
 import { Results } from '../../enums/Results';
 import { handleSql } from '../../modules/oracleSetting';
-import { SELECT_VISIT_COUNT } from '../../queries/select';
+import { SELECT_VISIT_COUNT } from '../../queries/common';
 
 export const visitCount: Router = Router();
 
@@ -20,6 +20,7 @@ visitCount.get(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     let visitCount: null | Array<VisitCount> = null;
+
     try {
       visitCount = await handleSql(SELECT_VISIT_COUNT());
     } catch (e: any) {

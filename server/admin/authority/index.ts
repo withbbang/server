@@ -3,7 +3,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 
 // 모듈 임포트
 import { Results } from '../../../enums/Results';
-import { SELECT_AUTHORITY } from '../../../queries/select';
+import { SELECT_AUTHORITY } from '../../../queries/admin/authority';
 import { handleSql } from '../../../modules/oracleSetting';
 import { Authority } from '../../../types/Authority';
 

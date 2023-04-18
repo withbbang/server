@@ -13,10 +13,10 @@ import {
   handleIssueRefreshToken
 } from '../../modules/jwt';
 import { handleSql } from '../../modules/oracleSetting';
-import { SELECT_USER } from '../../queries/select';
-import { UPDATE_USER_LOGIN } from '../../queries/update';
+import { SELECT_USER, UPDATE_USER_LOGIN } from '../../queries/log';
 import { User } from '../../types/User';
 import { Results } from '../../enums/Results';
+import { handleCheckRequired } from '../../modules/common';
 
 export const logIn: Router = Router();
 
@@ -33,11 +33,10 @@ logIn.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    if (!req.body.id || !req.body.password) {
+    const { id, password } = req.body;
+    if (handleCheckRequired({ id, password })) {
       return res.json(Results[130]);
     }
-
-    const id: string = req.body.id;
 
     /* 1. 회원 존재 여부 확인 */
     let users: null | Array<User> = null;

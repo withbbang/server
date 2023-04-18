@@ -5,5 +5,6 @@ export interface Content {
   HIT: number;
   HEART: number;
   CREATE_DT: string;
+  IS_DELETED: string;
   PATH: string;
 }

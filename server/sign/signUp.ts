@@ -3,7 +3,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../enums/Results';
 
 // 모듈 임포트
-import { handleGetLocaleTime } from '../../modules/common';
+import { handleCheckRequired, handleGetLocaleTime } from '../../modules/common';
 import {
   handleCreateSalt,
   handleCreateSha512,
@@ -11,8 +11,7 @@ import {
   privateKey
 } from '../../modules/crypto';
 import { handleSql } from '../../modules/oracleSetting';
-import { INSERT_USER } from '../../queries/insert';
-import { SELECT_USER } from '../../queries/select';
+import { SELECT_USER, INSERT_USER } from '../../queries/sign';
 import { User } from '../../types/User';
 
 export const signUp: Router = Router();
@@ -30,14 +29,15 @@ signUp.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    if (!req.body.id || !req.body.password) {
+    const { id, password } = req.body;
+    if (handleCheckRequired({ id, password })) {
       return res.json(Results[130]);
     }
 
     /* 1. 회원 존재 여부 확인 */
     let users: null | Array<User> = null;
     try {
-      users = await handleSql(SELECT_USER({ id: req.body.id }));
+      users = await handleSql(SELECT_USER({ id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -75,7 +75,7 @@ signUp.post(
           salt &&
           (await handleSql(
             INSERT_USER({
-              id: req.body.id,
+              id,
               password,
               salt,
               auth: 30,

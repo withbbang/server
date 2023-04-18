@@ -2,15 +2,14 @@
 import { NextFunction, Request, Response, Router } from 'express';
 
 // 모듈 임포트
-import { handleGetLocaleTime } from '../../modules/common';
+import { handleCheckRequired, handleGetLocaleTime } from '../../modules/common';
 import {
   handleCreateSha512,
   handleRSADecrypt,
   privateKey
 } from '../../modules/crypto';
 import { handleSql } from '../../modules/oracleSetting';
-import { SELECT_USER } from '../../queries/select';
-import { UPDATE_USER_WITHDRAW } from '../../queries/update';
+import { SELECT_USER, UPDATE_USER_WITHDRAW } from '../../queries/sign';
 import { User } from '../../types/User';
 import { Results } from '../../enums/Results';
 
@@ -29,11 +28,10 @@ signOut.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    if (!req.body.id || !req.body.password) {
+    const { id, password } = req.body;
+    if (handleCheckRequired({ id, password })) {
       return res.json(Results[130]);
     }
-
-    const id = req.body.id;
 
     /* 1. 요청 헤더에 토큰 존재 여부 확인 */
     let token: string = '';

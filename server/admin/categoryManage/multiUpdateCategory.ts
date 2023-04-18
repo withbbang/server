@@ -5,8 +5,10 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../../enums/Results';
 import { Category } from '../../../types/Category';
 import { handleMultipleSql, handleSql } from '../../../modules/oracleSetting';
-import { SELECT_ALL_CATEGORIES } from '../../../queries/select';
-import { UPDATE_CATEGORY } from '../../../queries/update';
+import {
+  SELECT_ALL_CATEGORIES,
+  UPDATE_MULTI_CATEGORY
+} from '../../../queries/admin/categoryManage';
 import {
   handleCheckRequired,
   handleGetLocaleTime
@@ -66,7 +68,8 @@ multiupdateCategory.post(
           categoryId: data.ID
         };
       });
-      const { query } = UPDATE_CATEGORY(params[0]);
+
+      const { query } = UPDATE_MULTI_CATEGORY(params[0]);
 
       try {
         await handleMultipleSql(query, params);

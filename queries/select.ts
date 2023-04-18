@@ -120,8 +120,8 @@ function SELECT_ALL_CONTENTS(params?: any) {
 }
 
 function SELECT_CONTENTS(params?: any) {
-  let path, id, title, isDone;
-  params && ({ path, id, title, isDone } = params);
+  let path, id, title, isDone, contentId;
+  params && ({ path, id, title, isDone, contentId } = params);
   const query = `
     SELECT
       CO.ID AS ID
@@ -133,6 +133,7 @@ function SELECT_CONTENTS(params?: any) {
       JOIN CONTENTS CO ON CA.ID = CO.CATEGORY_ID
     WHERE
       1 = 1
+      ${contentId ? 'AND CO.ID === :contentId' : ''}
       ${isDone ? '' : "AND CO.IS_DONE = 'Y'"}
       AND CO.IS_DELETED = 'N'
       ${path ? 'AND CA.PATH = :path' : ''}

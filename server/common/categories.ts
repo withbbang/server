@@ -5,7 +5,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../enums/Results';
 import { Category } from '../../types/Category';
 import { handleSql } from '../../modules/oracleSetting';
-import { SELECT_CATEGORIES } from '../../queries/select';
+import { SELECT_CATEGORIES } from '../../queries/common';
 
 export const categories: Router = Router();
 
@@ -19,13 +19,10 @@ categories.post(
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
-    /* 1. id 존재 여부 확인 */
-    const id: string | undefined = req.body.id;
-
-    /* 4. 카테고리들 가져오기 */
+    /* 1. 카테고리들 가져오기 */
     let categories: null | Array<Category> = null;
     try {
-      categories = await handleSql(SELECT_CATEGORIES({ id }));
+      categories = await handleSql(SELECT_CATEGORIES({ id: req.body.id }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }

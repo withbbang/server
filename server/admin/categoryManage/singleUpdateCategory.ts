@@ -7,13 +7,13 @@ import { Category } from '../../../types/Category';
 import { handleSql } from '../../../modules/oracleSetting';
 import {
   SELECT_ALL_CATEGORIES,
-  SELECT_CATEGORIES
-} from '../../../queries/select';
+  SELECT_CATEGORIES_BY_CATEGORYID_IN_SINGLE_UPDATE,
+  UPDATE_SINGLE_CATEGORY
+} from '../../../queries/admin/categoryManage';
 import {
   handleCheckRequired,
   handleGetLocaleTime
 } from '../../../modules/common';
-import { UPDATE_CATEGORY } from '../../../queries/update';
 
 export const singleUpdateCategory: Router = Router();
 
@@ -28,8 +28,8 @@ singleUpdateCategory.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    const { isDeleted, title, id, path, categoryId, auth, priority } = req.body;
-    if (handleCheckRequired({ isDeleted, title, id, path, categoryId, auth })) {
+    const { title, id, path, categoryId, auth } = req.body;
+    if (handleCheckRequired({ title, id, path, categoryId, auth })) {
       return res.json(Results[130]);
     }
 
@@ -37,7 +37,7 @@ singleUpdateCategory.post(
     let categories: null | Array<Category> = null;
     try {
       categories = await handleSql(
-        SELECT_CATEGORIES({ isDeleted, id, categoryId })
+        SELECT_CATEGORIES_BY_CATEGORYID_IN_SINGLE_UPDATE({ categoryId })
       );
     } catch (e: any) {
       return next(new Error(e.stack));
@@ -58,14 +58,13 @@ singleUpdateCategory.post(
         /* 2-2. 요청값이 하나라도 다를 경우 */
         try {
           await handleSql(
-            UPDATE_CATEGORY({
+            UPDATE_SINGLE_CATEGORY({
               title,
               update_dt: handleGetLocaleTime('db'),
               update_user: id,
               auth,
               path,
-              categoryId,
-              priority
+              categoryId
             })
           );
         } catch (e: any) {

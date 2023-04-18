@@ -4,9 +4,9 @@ import { Results } from '../../enums/Results';
 
 // 모듈 임포트
 import { handleSql } from '../../modules/oracleSetting';
-import { SELECT_USER } from '../../queries/select';
-import { UPDATE_USER_LOGOUT } from '../../queries/update';
+import { SELECT_USER, UPDATE_USER_LOGOUT } from '../../queries/log';
 import { User } from '../../types/User';
+import { handleCheckRequired } from '../../modules/common';
 
 export const logOut: Router = Router();
 
@@ -23,7 +23,8 @@ logOut.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    if (!req.body.id) {
+    const { id } = req.body;
+    if (handleCheckRequired({ id })) {
       return res.json(Results[130]);
     }
 
@@ -35,8 +36,6 @@ logOut.post(
       return res.json(Results[40]);
     }
     let users: null | Array<User> = null;
-
-    const id: string = req.body.id;
 
     /* 2. 회원 존재 여부 확인 */
     try {
