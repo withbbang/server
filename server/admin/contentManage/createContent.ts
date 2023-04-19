@@ -5,8 +5,10 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../../enums/Results';
 import { Content } from '../../../types/Content';
 import { handleSql } from '../../../modules/oracleSetting';
-import { SELECT_ALL_CONTENTS, SELECT_CONTENTS } from '../../../queries/select';
-import { INSERT_CONTENT } from '../../../queries/insert';
+import {
+  SELECT_CONTENTS_BY_TITLE,
+  INSERT_CONTENT
+} from '../../../queries/admin/contentManage';
 import {
   handleCheckRequired,
   handleGetLocaleTime
@@ -25,15 +27,15 @@ createContent.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    const { categoryId, title, content, id } = req.body;
-    if (handleCheckRequired({ categoryId, title, content, id })) {
+    const { categoryId, title, content, isDone, id } = req.body;
+    if (handleCheckRequired({ categoryId, title, content, isDone, id })) {
       return res.json(Results[130]);
     }
 
     /* 1. 컨텐트 존재 여부 */
     let contents: null | Array<Content> = null;
     try {
-      contents = await handleSql(SELECT_CONTENTS({ title, isDone: 1 }));
+      contents = await handleSql(SELECT_CONTENTS_BY_TITLE({ title }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -50,6 +52,7 @@ createContent.post(
             title,
             content,
             id,
+            isDone,
             create_dt: handleGetLocaleTime('db')
           })
         );

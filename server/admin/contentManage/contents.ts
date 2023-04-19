@@ -5,7 +5,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../../enums/Results';
 import { Content } from '../../../types/Content';
 import { handleSql } from '../../../modules/oracleSetting';
-import { SELECT_ALL_CONTENTS } from '../../../queries/select';
+import { SELECT_ALL_CONTENTS } from '../../../queries/admin/contentManage';
 
 export const contents: Router = Router();
 

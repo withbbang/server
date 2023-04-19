@@ -46,7 +46,7 @@ function INSERT_CATEGORY(params: any) {
 }
 
 function INSERT_CONTENT(params: any) {
-  const { categoryId, title, content, id, create_dt } = params;
+  const { categoryId, title, content, id, create_dt, isDone } = params;
   const query = `
     INSERT INTO CONTENTS (
       CATEGORY_ID
@@ -54,12 +54,14 @@ function INSERT_CONTENT(params: any) {
       , CONTENT
       , CREATE_USER
       , CREATE_DT
+      , IS_DONE
     ) VALUES (
       :categoryId
       , :title
       , :content
       , :id
       , TO_DATE(:create_dt, 'YYYYMMDDHH24MISS')
+      , :isDone
     )
   `;
 

@@ -28,17 +28,15 @@ deleteRestoreContent.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    const { id, contentId, isDeleted } = req.body;
-    if (handleCheckRequired({ id, contentId, isDeleted })) {
+    const { id, contentId } = req.body;
+    if (handleCheckRequired({ id, contentId })) {
       return res.json(Results[130]);
     }
 
     /* 1. 컨텐트 존재 여부 */
     let contents: null | Array<Content> = null;
     try {
-      contents = await handleSql(
-        SELECT_CATEGORIES({ id, contentId, isDeleted })
-      );
+      contents = await handleSql(SELECT_CATEGORIES({ contentId }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -47,36 +45,30 @@ deleteRestoreContent.post(
       /* 2. 컨텐트 있을 경우 값 비교 */
       const content: Content = contents[0];
 
-      /* 2-1. 요청값이 동일할 경우 */
-      if (content.IS_DELETED === isDeleted) {
-        try {
-          const date = handleGetLocaleTime('db');
-          await handleSql(
-            UPDATE_DELETE_RESTORE_CATEGORY({
-              isDeleted: isDeleted === 'Y' ? 'N' : 'Y',
-              update_dt: date,
-              delete_dt: isDeleted === 'Y' ? null : date,
-              update_user: id,
-              delete_user: isDeleted === 'Y' ? null : id,
-              contentId
-            })
-          );
-        } catch (e: any) {
-          return next(new Error(e.stack));
-        }
-
-        /* 2-3. 갱신된 컨텐트들 반환 */
-        try {
-          contents = await handleSql(SELECT_ALL_CATEGORIES());
-        } catch (e: any) {
-          return next(new Error(e.stack));
-        }
-
-        return res.json({ ...Results[0], contents });
-      } else {
-        /* 2-2. 요청값이 다를 경우 */
-        return res.json(Results[150]);
+      try {
+        const date = handleGetLocaleTime('db');
+        await handleSql(
+          UPDATE_DELETE_RESTORE_CATEGORY({
+            isDeleted: content.IS_DELETED === 'Y' ? 'N' : 'Y',
+            update_dt: date,
+            delete_dt: content.IS_DELETED === 'Y' ? null : date,
+            update_user: id,
+            delete_user: content.IS_DELETED === 'Y' ? null : id,
+            contentId
+          })
+        );
+      } catch (e: any) {
+        return next(new Error(e.stack));
       }
+
+      /* 2-3. 갱신된 컨텐트들 반환 */
+      try {
+        contents = await handleSql(SELECT_ALL_CATEGORIES());
+      } catch (e: any) {
+        return next(new Error(e.stack));
+      }
+
+      return res.json({ ...Results[0], contents });
     } else {
       /* 3. 컨텐트 없을 경우 반환 */
       return res.json(Results[120]);

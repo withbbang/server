@@ -5,7 +5,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { Results } from '../../../enums/Results';
 import { Content } from '../../../types/Content';
 import { handleSql } from '../../../modules/oracleSetting';
-import { SELECT_CONTENT_BY_ADMINISTRATOR } from '../../../queries/select';
+import { SELECT_CONTENTS_BY_CONTENTID } from '../../../queries/admin/contentManage';
 import { handleCheckRequired } from '../../../modules/common';
 
 export const content: Router = Router();
@@ -30,7 +30,7 @@ content.post(
     let contents: Array<Content> = [];
     try {
       contents = await handleSql(
-        SELECT_CONTENT_BY_ADMINISTRATOR({ id, contentId })
+        SELECT_CONTENTS_BY_CONTENTID({ id, contentId })
       );
     } catch (e: any) {
       return next(new Error(e.stack));
