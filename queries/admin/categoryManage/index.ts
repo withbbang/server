@@ -60,7 +60,7 @@ function INSERT_CATEGORY(params: any) {
   return { query, params };
 }
 
-function SELECT_CATEGORIES_BY_CATEGORYID_IN_DELETE_RESTORE(params?: any) {
+function SELECT_CATEGORY_BY_CATEGORYID_FOR_DELETE_RESTORE(params?: any) {
   // 구조분해 할당 먼저 선언하는 방법
   let categoryId;
   params && ({ categoryId } = params);
@@ -72,7 +72,7 @@ function SELECT_CATEGORIES_BY_CATEGORYID_IN_DELETE_RESTORE(params?: any) {
   return { query, params };
 }
 
-function SELECT_CATEGORIES_BY_CATEGORYID_IN_SINGLE_UPDATE(params?: any) {
+function SELECT_CATEGORY_BY_CATEGORYID_FOR_SINGLE_UPDATE(params?: any) {
   // 구조분해 할당 먼저 선언하는 방법
   let categoryId;
   params && ({ categoryId } = params);
@@ -166,8 +166,8 @@ export {
   SELECT_ALL_CATEGORIES,
   SELECT_CATEGORIES_BY_TITLE,
   INSERT_CATEGORY,
-  SELECT_CATEGORIES_BY_CATEGORYID_IN_DELETE_RESTORE,
-  SELECT_CATEGORIES_BY_CATEGORYID_IN_SINGLE_UPDATE,
+  SELECT_CATEGORY_BY_CATEGORYID_FOR_DELETE_RESTORE,
+  SELECT_CATEGORY_BY_CATEGORYID_FOR_SINGLE_UPDATE,
   UPDATE_DELETE_RESTORE_CATEGORY,
   UPDATE_MULTI_CATEGORY,
   UPDATE_SINGLE_CATEGORY

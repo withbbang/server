@@ -7,7 +7,7 @@ import { Category } from '../../../types/Category';
 import { handleSql } from '../../../modules/oracleSetting';
 import {
   SELECT_ALL_CATEGORIES,
-  SELECT_CATEGORIES_BY_CATEGORYID_IN_DELETE_RESTORE,
+  SELECT_CATEGORY_BY_CATEGORYID_FOR_DELETE_RESTORE,
   UPDATE_DELETE_RESTORE_CATEGORY
 } from '../../../queries/admin/categoryManage';
 import {
@@ -37,7 +37,7 @@ deleteRestoreCategory.post(
     let categories: null | Array<Category> = null;
     try {
       categories = await handleSql(
-        SELECT_CATEGORIES_BY_CATEGORYID_IN_DELETE_RESTORE({ categoryId })
+        SELECT_CATEGORY_BY_CATEGORYID_FOR_DELETE_RESTORE({ categoryId })
       );
     } catch (e: any) {
       return next(new Error(e.stack));

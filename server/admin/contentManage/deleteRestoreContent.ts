@@ -6,14 +6,14 @@ import { Results } from '../../../enums/Results';
 import { Content } from '../../../types/Content';
 import { handleSql } from '../../../modules/oracleSetting';
 import {
-  SELECT_ALL_CATEGORIES,
-  SELECT_CATEGORIES
-} from '../../../queries/select';
+  SELECT_ALL_CONTENTS,
+  SELECT_CONTENT_BY_CONTENTID_FOR_DELETE_RESTORE,
+  UPDATE_DELETE_RESTORE_CONTENT
+} from '../../../queries/admin/contentManage';
 import {
   handleCheckRequired,
   handleGetLocaleTime
 } from '../../../modules/common';
-import { UPDATE_DELETE_RESTORE_CATEGORY } from '../../../queries/update';
 
 export const deleteRestoreContent: Router = Router();
 
@@ -36,7 +36,9 @@ deleteRestoreContent.post(
     /* 1. 컨텐트 존재 여부 */
     let contents: null | Array<Content> = null;
     try {
-      contents = await handleSql(SELECT_CATEGORIES({ contentId }));
+      contents = await handleSql(
+        SELECT_CONTENT_BY_CONTENTID_FOR_DELETE_RESTORE({ contentId })
+      );
     } catch (e: any) {
       return next(new Error(e.stack));
     }
@@ -48,7 +50,7 @@ deleteRestoreContent.post(
       try {
         const date = handleGetLocaleTime('db');
         await handleSql(
-          UPDATE_DELETE_RESTORE_CATEGORY({
+          UPDATE_DELETE_RESTORE_CONTENT({
             isDeleted: content.IS_DELETED === 'Y' ? 'N' : 'Y',
             update_dt: date,
             delete_dt: content.IS_DELETED === 'Y' ? null : date,
@@ -63,7 +65,7 @@ deleteRestoreContent.post(
 
       /* 2-3. 갱신된 컨텐트들 반환 */
       try {
-        contents = await handleSql(SELECT_ALL_CATEGORIES());
+        contents = await handleSql(SELECT_ALL_CONTENTS());
       } catch (e: any) {
         return next(new Error(e.stack));
       }

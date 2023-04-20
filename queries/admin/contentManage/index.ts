@@ -78,9 +78,49 @@ function INSERT_CONTENT(params: any) {
   return { query, params };
 }
 
+function SELECT_CONTENT_BY_CONTENTID_FOR_DELETE_RESTORE(params?: any) {
+  // 구조분해 할당 먼저 선언하는 방법
+  let contentId;
+  params && ({ contentId } = params);
+
+  const query = `
+          SELECT IS_DELETED FROM CONTENTS WHERE ID = :contentId
+        `;
+
+  return { query, params };
+}
+
+function UPDATE_DELETE_RESTORE_CONTENT(params?: any) {
+  const {
+    isDeleted,
+    update_dt,
+    delete_dt,
+    update_user,
+    delete_user,
+    contentId
+  } = params;
+
+  const query = `
+        UPDATE
+          CONTENT
+        SET
+          IS_DELETED = :isDeleted
+          , UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
+          , DELETE_DT = TO_DATE(:delete_dt, 'YYYYMMDDHH24MISS')
+          , UPDATE_USER = :update_user
+          , DELETE_USER = :delete_user
+        WHERE
+          ID = :contentId
+      `;
+
+  return { query, params };
+}
+
 export {
   SELECT_ALL_CONTENTS,
   SELECT_CONTENTS_BY_TITLE,
   SELECT_CONTENTS_BY_CONTENTID,
-  INSERT_CONTENT
+  INSERT_CONTENT,
+  SELECT_CONTENT_BY_CONTENTID_FOR_DELETE_RESTORE,
+  UPDATE_DELETE_RESTORE_CONTENT
 };

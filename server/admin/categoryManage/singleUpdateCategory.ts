@@ -7,7 +7,7 @@ import { Category } from '../../../types/Category';
 import { handleSql } from '../../../modules/oracleSetting';
 import {
   SELECT_ALL_CATEGORIES,
-  SELECT_CATEGORIES_BY_CATEGORYID_IN_SINGLE_UPDATE,
+  SELECT_CATEGORY_BY_CATEGORYID_FOR_SINGLE_UPDATE,
   UPDATE_SINGLE_CATEGORY
 } from '../../../queries/admin/categoryManage';
 import {
@@ -37,7 +37,7 @@ singleUpdateCategory.post(
     let categories: null | Array<Category> = null;
     try {
       categories = await handleSql(
-        SELECT_CATEGORIES_BY_CATEGORYID_IN_SINGLE_UPDATE({ categoryId })
+        SELECT_CATEGORY_BY_CATEGORYID_FOR_SINGLE_UPDATE({ categoryId })
       );
     } catch (e: any) {
       return next(new Error(e.stack));
