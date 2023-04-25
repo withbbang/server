@@ -102,7 +102,7 @@ function UPDATE_DELETE_RESTORE_CONTENT(params?: any) {
 
   const query = `
         UPDATE
-          CONTENT
+          CONTENTS
         SET
           IS_DELETED = :isDeleted
           , UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
