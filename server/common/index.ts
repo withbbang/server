@@ -7,6 +7,7 @@ import { Results } from '../../enums/Results';
 import { visitCount } from './visitCount';
 import { categories } from './categories';
 import { contents } from './contents';
+import { searchContents } from './searchContents';
 
 export const common: Router = Router();
 
@@ -20,3 +21,4 @@ common.get('/public-key', function (req: Request, res: Response): void {
 common.use('/visit-count', visitCount);
 common.use('/categories', categories);
 common.use('/contents', contents);
+common.use('/search-contents', searchContents);

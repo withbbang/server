@@ -146,6 +146,32 @@ function SELECT_USER(params?: any) {
   return { query, params };
 }
 
+function SELECT_CONTENTS_FOR_SEARCHING(params?: any) {
+  let snippet, id;
+  params && ({ snippet, id } = params);
+
+  const query = `
+    SELECT
+      CO.ID
+      , CO.TITLE
+      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, '대해서'), 20) AS CONTENT
+      , CO.PATH
+    FROM
+      CONTENTS CO
+      JOIN CATEGORY CA ON CO.CATEGORY_ID = CA.ID
+    WHERE
+      CO.IS_DELETED = 'N'
+      AND CO.IS_DONE = 'Y'
+      AND CA.AUTHORITY_AUTH >= ${
+        id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
+      }
+      AND (INSTR(CO.TITLE, '테') > 0
+      OR INSTR(CO.CONTENT, '테') > 0)
+  `;
+
+  return { query, params };
+}
+
 export {
   SELECT_VISIT_COUNT,
   SELECT_CATEGORIES,
@@ -156,5 +182,6 @@ export {
   DELETE_ALL_VISITOR,
   UPDATE_USER_ACCESS_TOKEN,
   SELECT_VISITOR_IP,
-  SELECT_USER
+  SELECT_USER,
+  SELECT_CONTENTS_FOR_SEARCHING
 };
