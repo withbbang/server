@@ -11,8 +11,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 
 // 모듈 임포트
 import { cookieConfig } from '../config/config';
-import { SELECT_USER } from '../queries/select';
-import { UPDATE_USER_ACCESS_TOKEN } from '../queries/update';
+import { UPDATE_USER_ACCESS_TOKEN, SELECT_USER } from '../queries/common';
 import { User } from '../types/User';
 import { handleSql } from './oracleSetting';
 import { Results } from '../enums/Results';

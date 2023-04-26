@@ -2,8 +2,10 @@
 import cron from 'node-cron';
 
 // 모듈 임포트
-import { UPDATE_INITIATE_TOTAY_VISITHISTORY } from '../queries/update';
-import { DELETE_ALL_VISITOR } from '../queries/delete';
+import {
+  UPDATE_INITIATE_TOTAY_VISITHISTORY,
+  DELETE_ALL_VISITOR
+} from '../queries/common';
 import { handleSql } from '../modules/oracleSetting';
 
 /**

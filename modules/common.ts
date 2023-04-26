@@ -5,9 +5,11 @@ import { Request, Response, NextFunction } from 'express';
 // 모듈 임포트
 import { handleSql } from './oracleSetting';
 import { cookieConfigSecure } from '../config/config';
-import { SELECT_VISITOR_IP } from '../queries/select';
-import { INSERT_TODAY_VISITOR_IP } from '../queries/insert';
-import { UPDATE_INCREMENT_VISITHISTORY } from '../queries/update';
+import {
+  UPDATE_INCREMENT_VISITHISTORY,
+  INSERT_TODAY_VISITOR_IP,
+  SELECT_VISITOR_IP
+} from '../queries/common';
 
 /**
  * 금일 방문여부 체크 함수

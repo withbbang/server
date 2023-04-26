@@ -20,6 +20,10 @@ function SELECT_USER(params?: any) {
   return { query, params };
 }
 
+/**
+ * update_dt, delete_dt 모두 동일한 변수로 사용하려 했지만
+ * ORA-01745: invalid host/bind variable name 에러로 인하여 서로 다른 변수로 적용함
+ */
 function UPDATE_USER_WITHDRAW(params?: any) {
   let id, update_dt, delete_dt;
   params && ({ id, update_dt, delete_dt } = params);

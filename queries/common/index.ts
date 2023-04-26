@@ -59,4 +59,102 @@ function SELECT_CONTENTS(params?: any) {
   return { query, params };
 }
 
-export { SELECT_VISIT_COUNT, SELECT_CATEGORIES, SELECT_CONTENTS };
+function UPDATE_INCREMENT_VISITHISTORY(params?: any) {
+  const query = `
+    UPDATE
+      VISITHISTORY
+    SET
+      TOTAL = TOTAL + 1
+      , TODAY = TODAY + 1
+`;
+
+  return { query, params };
+}
+
+function INSERT_TODAY_VISITOR_IP(params?: any) {
+  const { ip } = params;
+  const query = `INSERT INTO VISITOR VALUES (:ip)`;
+
+  return { query, params };
+}
+
+function UPDATE_INITIATE_TOTAY_VISITHISTORY(params?: any) {
+  const query = `
+    UPDATE
+      VISITHISTORY
+    SET
+      TODAY = 0
+`;
+
+  return { query, params };
+}
+
+function DELETE_ALL_VISITOR(params?: any) {
+  const query = `DELETE FROM VISITOR`;
+
+  return { query, params };
+}
+
+function UPDATE_USER_ACCESS_TOKEN(params: any) {
+  const { accessToken, id } = params;
+  const query = `
+    UPDATE
+      USERS
+    SET
+      ACCESS_TOKEN = :accessToken
+    WHERE
+      ID = :id
+  `;
+
+  return { query, params };
+}
+
+function SELECT_VISITOR_IP(params?: any) {
+  const { ip } = params;
+  const query = `
+    SELECT
+        IP
+    FROM
+        VISITOR
+    WHERE
+        1 = 1
+        ${ip ? 'AND IP = :ip' : ''}
+  `;
+
+  return { query, params };
+}
+
+function SELECT_USER(params?: any) {
+  let id;
+  params && ({ id } = params);
+
+  const query = `
+    SELECT
+        ID
+        , PASSWORD
+        , SALT
+        , ACCESS_TOKEN
+        , REFRESH_TOKEN
+        , AUTH
+    FROM
+        USERS
+    WHERE
+        1 = 1
+        ${id ? 'AND ID = :id' : ''}
+    `;
+
+  return { query, params };
+}
+
+export {
+  SELECT_VISIT_COUNT,
+  SELECT_CATEGORIES,
+  SELECT_CONTENTS,
+  UPDATE_INCREMENT_VISITHISTORY,
+  INSERT_TODAY_VISITOR_IP,
+  UPDATE_INITIATE_TOTAY_VISITHISTORY,
+  DELETE_ALL_VISITOR,
+  UPDATE_USER_ACCESS_TOKEN,
+  SELECT_VISITOR_IP,
+  SELECT_USER
+};
