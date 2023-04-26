@@ -165,8 +165,10 @@ function SELECT_CONTENTS_FOR_SEARCHING(params?: any) {
       AND CA.AUTHORITY_AUTH >= ${
         id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
       }
-      AND (INSTR(CO.TITLE, 'snippet') > 0
-      OR INSTR(CO.CONTENT, 'snippet') > 0)
+      AND (
+        INSTR(CO.TITLE, 'snippet') > 0
+        OR INSTR(CO.CONTENT, 'snippet') > 0
+      )
   `;
 
   return { query, params };
