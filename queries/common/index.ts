@@ -154,7 +154,7 @@ function SELECT_CONTENTS_FOR_SEARCHING(params?: any) {
     SELECT
       CO.ID
       , CO.TITLE
-      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, '대해서'), 20) AS CONTENT
+      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, 'snippet'), 20) AS CONTENT
       , CO.PATH
     FROM
       CONTENTS CO
@@ -165,8 +165,8 @@ function SELECT_CONTENTS_FOR_SEARCHING(params?: any) {
       AND CA.AUTHORITY_AUTH >= ${
         id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
       }
-      AND (INSTR(CO.TITLE, '테') > 0
-      OR INSTR(CO.CONTENT, '테') > 0)
+      AND (INSTR(CO.TITLE, 'snippet') > 0
+      OR INSTR(CO.CONTENT, 'snippet') > 0)
   `;
 
   return { query, params };
