@@ -1,5 +1,6 @@
 export interface Content {
-  ID: string;
+  ID: number;
+  CATEGORY_ID: number;
   TITLE: string;
   CONTENT: string;
   HIT: number;

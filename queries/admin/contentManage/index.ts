@@ -116,11 +116,35 @@ function UPDATE_DELETE_RESTORE_CONTENT(params?: any) {
   return { query, params };
 }
 
+function UPDATE_CONTENT(params?: any) {
+  let categoryId, title, content, update_dt, update_user, isDone, contentId;
+  params &&
+    ({ categoryId, title, content, update_dt, update_user, isDone, contentId } =
+      params);
+
+  const query = `
+    UPDATE
+      CONTENTS
+    SET
+      UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
+      , UPDATE_USER = :update_user
+      ${categoryId ? ', CATEGORY_ID = :categoryId' : ''}
+      ${title ? ', TITLE = :title' : ''}
+      ${isDone ? ', IS_DONE = :isDone' : ''}
+      ${content ? ', CONTENT = :content' : ''}
+    WHERE
+      ID = :contentId
+  `;
+
+  return { query, params };
+}
+
 export {
   SELECT_ALL_CONTENTS,
   SELECT_CONTENTS_BY_TITLE,
   SELECT_CONTENTS_BY_CONTENTID,
   INSERT_CONTENT,
   SELECT_CONTENT_BY_CONTENTID_FOR_DELETE_RESTORE,
-  UPDATE_DELETE_RESTORE_CONTENT
+  UPDATE_DELETE_RESTORE_CONTENT,
+  UPDATE_CONTENT
 };
