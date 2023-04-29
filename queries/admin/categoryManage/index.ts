@@ -31,7 +31,9 @@ function SELECT_CATEGORIES_BY_TITLE(params?: any) {
 }
 
 function INSERT_CATEGORY(params: any) {
-  const { title, priority, create_dt, id, auth, path } = params;
+  let title, priority, create_dt, id, auth, path;
+  params && ({ title, priority, create_dt, id, auth, path } = params);
+
   const query = `
       INSERT INTO CATEGORY (
         TITLE
@@ -96,14 +98,10 @@ function SELECT_CATEGORY_BY_CATEGORYID_FOR_SINGLE_UPDATE(params?: any) {
 }
 
 function UPDATE_DELETE_RESTORE_CATEGORY(params?: any) {
-  const {
-    isDeleted,
-    update_dt,
-    delete_dt,
-    update_user,
-    delete_user,
-    categoryId
-  } = params;
+  let isDeleted, update_dt, delete_dt, update_user, delete_user, categoryId;
+  params &&
+    ({ isDeleted, update_dt, delete_dt, update_user, delete_user, categoryId } =
+      params);
 
   const query = `
       UPDATE

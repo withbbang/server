@@ -72,7 +72,9 @@ function UPDATE_INCREMENT_VISITHISTORY(params?: any) {
 }
 
 function INSERT_TODAY_VISITOR_IP(params?: any) {
-  const { ip } = params;
+  let ip;
+  params && ({ ip } = params);
+
   const query = `INSERT INTO VISITOR VALUES (:ip)`;
 
   return { query, params };
@@ -96,7 +98,9 @@ function DELETE_ALL_VISITOR(params?: any) {
 }
 
 function UPDATE_USER_ACCESS_TOKEN(params: any) {
-  const { accessToken, id } = params;
+  let accessToken, id;
+  params && ({ accessToken, id } = params);
+
   const query = `
     UPDATE
       USERS
@@ -110,7 +114,9 @@ function UPDATE_USER_ACCESS_TOKEN(params: any) {
 }
 
 function SELECT_VISITOR_IP(params?: any) {
-  const { ip } = params;
+  let ip;
+  params && ({ ip } = params);
+
   const query = `
     SELECT
         IP
