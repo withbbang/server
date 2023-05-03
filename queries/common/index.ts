@@ -160,7 +160,7 @@ function SELECT_CONTENTS_FOR_SEARCHING(params?: any) {
     SELECT
       CO.ID
       , CO.TITLE
-      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, 'snippet'), 20) AS CONTENT
+      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, :snippet), 20) AS CONTENT
       , CO.PATH
     FROM
       CONTENTS CO
@@ -172,8 +172,8 @@ function SELECT_CONTENTS_FOR_SEARCHING(params?: any) {
         id ? '(SELECT AUTH FROM USERS WHERE ID = :id)' : 20
       }
       AND (
-        INSTR(CO.TITLE, 'snippet') > 0
-        OR INSTR(CO.CONTENT, 'snippet') > 0
+        INSTR(CO.TITLE, :snippet) > 0
+        OR INSTR(CO.CONTENT, :snippet) > 0
       )
   `;
 
