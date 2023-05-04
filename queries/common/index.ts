@@ -206,6 +206,22 @@ function SELECT_CONTENT(params?: any) {
   return { query, params };
 }
 
+function SELECT_HEARTS_COUNT(params?: any) {
+  let contentId;
+  params && ({ contentId } = params);
+
+  const query = `
+    SELECT
+      COUNT(IP) AS COUNT
+    FROM
+      HEARTS
+    WHERE
+      CONTENTS_ID = :contentId
+    `;
+
+  return { query, params };
+}
+
 export {
   SELECT_VISIT_COUNT,
   SELECT_CATEGORIES,
@@ -218,5 +234,6 @@ export {
   SELECT_VISITOR_IP,
   SELECT_USER,
   SELECT_CONTENTS_FOR_SEARCHING,
-  SELECT_CONTENT
+  SELECT_CONTENT,
+  SELECT_HEARTS_COUNT
 };

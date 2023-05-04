@@ -9,6 +9,7 @@ import { categories } from './categories';
 import { contents } from './contents';
 import { searchContents } from './searchContents';
 import { content } from './content';
+import { heartsCount } from './heart';
 
 export const common: Router = Router();
 
@@ -24,3 +25,4 @@ common.use('/categories', categories);
 common.use('/contents', contents);
 common.use('/search-contents', searchContents);
 common.use('/content', content);
+common.use('/heart', heartsCount);
