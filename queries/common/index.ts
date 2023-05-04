@@ -39,7 +39,7 @@ function SELECT_CONTENTS(params?: any) {
         CO.ID AS ID
         , CO.TITLE AS TITLE
         , SUBSTR(CO.CONTENT, 1, 300) AS CONTENT
-        , CO.PATH AS PATH
+        , NVL(CO.PATH, CA.PATH || '/' || CO.ID) AS PATH
     FROM
         CATEGORY CA
         JOIN CONTENTS CO ON CA.ID = CO.CATEGORY_ID
@@ -160,8 +160,8 @@ function SELECT_CONTENTS_FOR_SEARCHING(params?: any) {
     SELECT
       CO.ID
       , CO.TITLE
-      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, :snippet), 20) AS CONTENT
-      , CO.PATH
+      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, '카테'), 20) AS CONTENT
+      , NVL(CO.PATH, CA.PATH || '/' || CO.ID) AS PATH
     FROM
       CONTENTS CO
       JOIN CATEGORY CA ON CO.CATEGORY_ID = CA.ID
