@@ -8,6 +8,7 @@ import { visitCount } from './visitCount';
 import { categories } from './categories';
 import { contents } from './contents';
 import { searchContents } from './searchContents';
+import { content } from './content';
 
 export const common: Router = Router();
 
@@ -22,3 +23,4 @@ common.use('/visit-count', visitCount);
 common.use('/categories', categories);
 common.use('/contents', contents);
 common.use('/search-contents', searchContents);
+common.use('/content', content);
