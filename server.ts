@@ -65,6 +65,7 @@ app.get(
   ): Promise<void> {
     // logger.info('GET /');
     // logger.error('Error message');
+
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 
     try {
