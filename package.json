@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.ts",
   "dependencies": {
+    "async": "^3.2.4",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -17,6 +18,7 @@
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
+    "@types/async": "^3.2.20",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",

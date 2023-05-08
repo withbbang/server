@@ -8,6 +8,7 @@ import express, {
   NextFunction
 } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import async from 'async';
 
 // 모듈 임포트
 import { cookieConfig } from '../config/config';
