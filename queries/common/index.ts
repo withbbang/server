@@ -160,7 +160,7 @@ function SELECT_CONTENTS_FOR_SEARCHING(params?: any) {
     SELECT
       CO.ID
       , CO.TITLE
-      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, '카테'), 20) AS CONTENT
+      , SUBSTR(CO.CONTENT, INSTR(CO.CONTENT, :snippet), 200) AS CONTENT
       , NVL(CO.PATH, CA.PATH || '/' || CO.ID) AS PATH
     FROM
       CONTENTS CO

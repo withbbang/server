@@ -16,6 +16,7 @@ import { User } from '../types/User';
 import { handleSql } from './oracleSetting';
 import { Results } from '../enums/Results';
 import { handleIssueAccessToken } from './jwt';
+import { handleCheckRequired } from './common';
 
 /* Token 생성 및 검증용 key */
 const jwtKey = process.env.jwtKey as string;
@@ -92,11 +93,10 @@ async function handleVerifyUserMiddleware(
   next: NextFunction
 ): Promise<any> {
   /* 0. 필수값 존재 확인 */
-  if (!req.body.id) {
+  const { id } = req.body;
+  if (handleCheckRequired({ id })) {
     return res.json(Results[130]);
   }
-
-  const id = req.body.id;
 
   /* 1. 요청 헤더에 토큰 존재 여부 확인 */
   let token: string = '';
