@@ -233,7 +233,7 @@ async function handleVerifyRTKMiddleware(
     return next(new Error(e.stack));
   }
 
-  /* 10. 쿠키설정 */
+  /* 10. 쿠키 설정 */
   res.cookie('atk', accessToken, cookieConfig);
 
   return next();
