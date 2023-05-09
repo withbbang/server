@@ -36,21 +36,21 @@ app.use('/server', server); // 라우터들 사용
 app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정
 
 // 데이터 요청 api는 정적 소스 라우팅보다 우선 선언해야함
-app.get(
-  '/error',
-  async function (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<any> {
-    try {
-      await handleCheckTodayVisit(req, res);
-      res.json({ error: 'Not Error Occur!' });
-    } catch (e: any) {
-      return next(new Error(e.stack));
-    }
-  }
-);
+// app.get(
+//   '/error',
+//   async function (
+//     req: Request,
+//     res: Response,
+//     next: NextFunction
+//   ): Promise<any> {
+//     try {
+//       await handleCheckTodayVisit(req, res);
+//       res.json({ error: 'Not Error Occur!' });
+//     } catch (e: any) {
+//       return next(new Error(e.stack));
+//     }
+//   }
+// );
 
 /**
  * 정적 소스 라우팅은 react build 파일에 일임한다는 뜻.
@@ -76,6 +76,9 @@ app.get(
   }
 );
 
+/**
+ * 에러처리 미들웨어는 모든 요청보다 마지막에 선언해야한다.
+ */
 handleErrorMiddleware(app);
 
 app.listen(PORT, function (): void {
