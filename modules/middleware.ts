@@ -170,7 +170,6 @@ async function handleVerifyATKMiddleware(
     if (e.name === 'TokenExpiredError') {
       /* 2-1. 토큰 만료시 재발급 */
       req.body.requiredRefresh = 'Y';
-      return next();
     } else if (e.name === 'JsonWebTokenError') {
       return res.json(Results[90]);
     } else {
