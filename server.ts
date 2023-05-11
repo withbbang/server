@@ -12,8 +12,8 @@ import { handleCheckTodayVisit } from './modules/common';
 import {
   handleSetParser,
   handleErrorMiddleware,
-  handleResponseLogginMiddleware,
-  handleRequestLogginMiddleware
+  handleResponseLoggingMiddleware,
+  handleRequestLoggingMiddleware
 } from './modules/middleware';
 import { handleStartCrons } from './modules/cron';
 import { handleProcess } from './modules/process';
@@ -29,8 +29,8 @@ handleProcess();
 handleStartCrons();
 
 handleSetParser(app);
-handleRequestLogginMiddleware(app);
-handleResponseLogginMiddleware(app);
+handleRequestLoggingMiddleware(app);
+handleResponseLoggingMiddleware(app);
 app.use(cors()); // cors 설정
 app.use('/server', server); // 라우터들 사용
 app.use(express.static(path.join(__dirname, './views'))); // 정적파일 디렉터리 설정

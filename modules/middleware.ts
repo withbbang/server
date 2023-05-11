@@ -17,6 +17,7 @@ import { handleSql } from './oracleSetting';
 import { Results } from '../enums/Results';
 import { handleIssueAccessToken } from './jwt';
 import { handleCheckRequired } from './common';
+import { logger } from '../config/winston';
 
 /* Token 생성 및 검증용 key */
 const jwtKey = process.env.jwtKey as string;
@@ -35,8 +36,11 @@ function handleSetParser(app: Express | Router): void {
  * Request log 남기기 Middleware
  * @param {Express | Router} app 라우터
  */
-function handleRequestLogginMiddleware(app: Express | Router): void {
+function handleRequestLoggingMiddleware(app: Express | Router): void {
   app.use(function (req: Request, res: Response, next: NextFunction): void {
+    // logger.debug(
+    //   `===============================================================================================Request Info: ${req.method} ${req.url}===============================================================================================`
+    // );
     console.log(`=======Request Info: ${req.method} ${req.url}=======`);
 
     next();
@@ -47,9 +51,10 @@ function handleRequestLogginMiddleware(app: Express | Router): void {
  * Response 전에 log 남기기 Middleware
  * @param {Express | Router} app 라우터
  */
-function handleResponseLogginMiddleware(app: Express | Router): void {
+function handleResponseLoggingMiddleware(app: Express | Router): void {
   app.use(function (req: Request, res: Response, next: NextFunction): void {
     res.on('finish', function (): void {
+      // logger.debug(`===============================================================================================Response Info: ${req.method} ${req.url} ${res.statusCode}===============================================================================================`)
       console.log(
         `=======Response Info: ${req.method} ${req.url} ${res.statusCode}=======`
       );
@@ -70,6 +75,7 @@ function handleErrorMiddleware(app: Express | Router): void {
     res: Response,
     next: NextFunction
   ): express.Response<any, Record<string, any>> | undefined {
+    // logger.error(err);
     console.error(err);
 
     if (req.originalUrl.includes('/server')) {
@@ -240,8 +246,8 @@ async function handleVerifyRTKMiddleware(
 
 export {
   handleSetParser,
-  handleRequestLogginMiddleware,
-  handleResponseLogginMiddleware,
+  handleRequestLoggingMiddleware,
+  handleResponseLoggingMiddleware,
   handleErrorMiddleware,
   handleVerifyUserMiddleware,
   handleVerifyATKMiddleware,
