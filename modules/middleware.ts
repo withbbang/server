@@ -8,6 +8,7 @@ import express, {
   NextFunction
 } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import util from 'util';
 
 // 모듈 임포트
 import { cookieConfig } from '../config/config';
@@ -53,12 +54,21 @@ function handleRequestLoggingMiddleware(app: Express | Router): void {
  */
 function handleResponseLoggingMiddleware(app: Express | Router): void {
   app.use(function (req: Request, res: Response, next: NextFunction): void {
-    res.on('finish', function (): void {
-      // logger.debug(`===============================================================================================Response Info: ${req.method} ${req.url} ${res.statusCode}===============================================================================================`)
+    const oldJson = res.json;
+
+    res.json = (body) => {
+      res.locals.body = body;
+      // logger.debug(`===============================================================================================Response Info: ${req.method} ${req.url} ${body}===============================================================================================`)
       console.log(
-        `=======Response Info: ${req.method} ${req.url} ${res.statusCode}=======`
+        `=======Response Info: ${res.statusCode} ${util.inspect(
+          body,
+          false,
+          null,
+          true
+        )}=======`
       );
-    });
+      return oldJson.call(res, body);
+    };
 
     next();
   });
