@@ -187,6 +187,9 @@ function SELECT_CONTENT(params?: any) {
   const query = `
     SELECT
         CO.TITLE AS TITLE
+        , CA.TITLE AS CATEGORY
+        , TO_CHAR(CO.CREATE_DT, 'YYYY. MM. DD') AS CREATE_DT
+        , TO_CHAR(CO.UPDATE_DT, 'YYYY. MM. DD') AS UPDATE_DT
         , CO.CONTENT AS CONTENT
     FROM
         CATEGORY CA
