@@ -201,23 +201,63 @@ function SELECT_CONTENT(params?: any) {
         }
     ORDER BY
         CO.CREATE_DT DESC
-    `;
+  `;
 
   return { query, params };
 }
 
-function SELECT_HEARTS_COUNT(params?: any) {
-  let contentId;
-  params && ({ contentId } = params);
+function SELECT_HEARTS_COUNT_ISHEART(params?: any) {
+  let ip, contentId;
+  params && ({ ip, contentId } = params);
 
   const query = `
     SELECT
       COUNT(IP) AS COUNT
+      , NVL(SUM(CASE IP WHEN :ip THEN 1 ELSE 0 END), 0) AS IS_HEART
     FROM
       HEARTS
     WHERE
       CONTENTS_ID = :contentId
-    `;
+  `;
+
+  return { query, params };
+}
+
+function SELECT_ISHEART(params?: any) {
+  let ip, contentId;
+  params && ({ ip, contentId } = params);
+
+  const query = `
+    SELECT
+      IP
+    FROM
+      HEARTS
+    WHERE
+      CONTENTS_ID = :contentId
+      AND IP = :ip
+  `;
+
+  return { query, params };
+}
+
+function INSERT_HEART(params?: any) {
+  let ip, contentId;
+  params && ({ ip, contentId } = params);
+
+  const query = `
+    INSERT INTO HEARTS VALUES (:ip, :contentId);
+  `;
+
+  return { query, params };
+}
+
+function DELETE_HEART(params?: any) {
+  let ip, contentId;
+  params && ({ ip, contentId } = params);
+
+  const query = `
+    DELETE FROM HEARTS WHERE IP = :ip AND CONTENTS_ID = :contentId;
+  `;
 
   return { query, params };
 }
@@ -235,5 +275,8 @@ export {
   SELECT_USER,
   SELECT_CONTENTS_FOR_SEARCHING,
   SELECT_CONTENT,
-  SELECT_HEARTS_COUNT
+  SELECT_HEARTS_COUNT_ISHEART,
+  SELECT_ISHEART,
+  INSERT_HEART,
+  DELETE_HEART
 };
