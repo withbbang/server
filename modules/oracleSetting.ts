@@ -100,6 +100,7 @@ async function handleSql({ query, params }: SqlFuncType): Promise<any> {
     await handleReleaseConnection(connection);
   }
 
+  // CLOB 데이터 타입 string 타입으로 변환
   oracledb.fetchAsString = [oracledb.CLOB];
 
   typeof result?.rows?.length === 'number' &&
