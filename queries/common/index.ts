@@ -265,6 +265,28 @@ function DELETE_HEART(params?: any) {
   return { query, params };
 }
 
+function SELECT_COMMENTS(params?: any) {
+  let contentId;
+  params && ({ contentId } = params);
+
+  const query = `
+    SELECT
+      ID
+      , REF_ID
+      , NICKNAME
+      , CREATE_DT
+      , UPDATE_DT
+      , IS_SECRET
+    FROM
+      COMMENTS
+    WHERE
+      CONTENTS_ID = :contentId
+      AND IS_DELETED = 'N'
+  `;
+
+  return { query, params };
+}
+
 export {
   SELECT_VISIT_COUNT,
   SELECT_CATEGORIES,
@@ -281,5 +303,6 @@ export {
   SELECT_HEARTS_COUNT_ISHEART,
   SELECT_ISHEART,
   INSERT_HEART,
-  DELETE_HEART
+  DELETE_HEART,
+  SELECT_COMMENTS
 };
