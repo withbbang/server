@@ -26,4 +26,4 @@ common.use('/contents', contents);
 common.use('/search-contents', searchContents);
 common.use('/content', content);
 common.use('/heart', heart);
-common.use('/heart-set', set);
+common.use('/set-heart', set);

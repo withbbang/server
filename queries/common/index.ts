@@ -245,7 +245,7 @@ function INSERT_HEART(params?: any) {
   params && ({ ip, contentId } = params);
 
   const query = `
-    INSERT INTO HEARTS VALUES (:ip, :contentId);
+    INSERT INTO HEARTS VALUES (:ip, :contentId)
   `;
 
   return { query, params };
@@ -256,7 +256,7 @@ function DELETE_HEART(params?: any) {
   params && ({ ip, contentId } = params);
 
   const query = `
-    DELETE FROM HEARTS WHERE IP = :ip AND CONTENTS_ID = :contentId;
+    DELETE FROM HEARTS WHERE IP = :ip AND CONTENTS_ID = :contentId
   `;
 
   return { query, params };
