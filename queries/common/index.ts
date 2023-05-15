@@ -274,6 +274,7 @@ function SELECT_COMMENTS(params?: any) {
       ID
       , REF_ID
       , NICKNAME
+      , COMMENTS
       , CREATE_DT
       , UPDATE_DT
       , IS_SECRET
