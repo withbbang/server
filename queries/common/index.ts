@@ -288,6 +288,61 @@ function SELECT_COMMENTS(params?: any) {
   return { query, params };
 }
 
+function INSERT_COMMENT(params?: any) {
+  let ip, nickName, password, contentId, comments, create_dt, isSecret, refId;
+  params &&
+    ({
+      ip,
+      nickName,
+      password,
+      contentId,
+      comments,
+      create_dt,
+      isSecret,
+      refId
+    } = params);
+
+  const query = `
+    INSERT INTO COMMENTS(
+      IP
+      , NICKNAME
+      , PASSWORD
+      , CONTENTS_ID
+      , COMMENTS
+      , CREATE_DT
+      , IS_SECRET
+      ${refId ? ', REF_ID' : ''}
+    ) VALUES (
+      :ip
+      , :nickName
+      , :password
+      , :contentId
+      , :comments
+      , :create_dt
+      , ${isSecret ? ':isSecret' : 'N'}
+      ${refId ? ', :refId' : ''}
+    )
+  `;
+
+  return { query, params };
+}
+
+function SELECT_CONTENT_FOR_EXISTS(params?: any) {
+  let contentId;
+  params && ({ contentId } = params);
+
+  const query = `
+    SELECT
+      ID
+    FROM
+      CONTENTS
+    WHERE
+      CONTENTS_ID = :contentId
+  `;
+
+  return { query, params };
+}
+
 export {
   SELECT_VISIT_COUNT,
   SELECT_CATEGORIES,
@@ -305,5 +360,7 @@ export {
   SELECT_ISHEART,
   INSERT_HEART,
   DELETE_HEART,
-  SELECT_COMMENTS
+  SELECT_COMMENTS,
+  INSERT_COMMENT,
+  SELECT_CONTENT_FOR_EXISTS
 };
