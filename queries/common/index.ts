@@ -275,7 +275,7 @@ function SELECT_COMMENTS(params?: any) {
       , REF_ID
       , NICKNAME
       , COMMENTS
-      , CREATE_DT
+      , TO_CHAR(CREATE_DT, 'YYYY.MM.DD') AS CREATE_DT
       , UPDATE_DT
       , IS_SECRET
     FROM
@@ -310,7 +310,7 @@ function INSERT_COMMENT(params?: any) {
       , CONTENTS_ID
       , COMMENTS
       , CREATE_DT
-      , IS_SECRET
+      ${isSecret ? ', IS_SECRET' : ''}
       ${refId ? ', REF_ID' : ''}
     ) VALUES (
       :ip
@@ -318,7 +318,7 @@ function INSERT_COMMENT(params?: any) {
       , :password
       , :contentId
       , :comments
-      , :create_dt
+      , TO_DATE(:create_dt, 'YYYYMMDDHH24MISS')
       , ${isSecret ? ':isSecret' : 'N'}
       ${refId ? ', :refId' : ''}
     )
@@ -337,7 +337,7 @@ function SELECT_CONTENT_FOR_EXISTS(params?: any) {
     FROM
       CONTENTS
     WHERE
-      CONTENTS_ID = :contentId
+      ID = :contentId
   `;
 
   return { query, params };

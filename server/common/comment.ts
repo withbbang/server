@@ -43,7 +43,7 @@ comments.get(
 );
 
 createComment.post(
-  '/create-comment',
+  '/',
   async function (
     req: Request,
     res: Response,
