@@ -273,9 +273,9 @@ function SELECT_COMMENTS(params?: any) {
     SELECT
       ID
       , REF_ID
-      , NICKNAME
-      , COMMENTS
-      , TO_CHAR(CREATE_DT, 'YYYY.MM.DD') AS CREATE_DT
+      , (CASE IS_SECRET WHEN 'Y' THEN '익명' ELSE NICKNAME END) AS NICKNAME
+      , (CASE IS_SECRET WHEN 'Y' THEN '비밀 댓글입니다.' ELSE COMMENTS END) AS COMMENTS
+      , TO_CHAR(CREATE_DT, 'YYYY.MM.DD HH24:mm:ss') AS CREATE_DT
       , UPDATE_DT
       , IS_SECRET
     FROM
@@ -283,6 +283,8 @@ function SELECT_COMMENTS(params?: any) {
     WHERE
       CONTENTS_ID = :contentId
       AND IS_DELETED = 'N'
+    ORDER BY
+      CREATE_DT
   `;
 
   return { query, params };
@@ -343,6 +345,48 @@ function SELECT_CONTENT_FOR_EXISTS(params?: any) {
   return { query, params };
 }
 
+function SELECT_COMMENT_FOR_EXISTS(params?: any) {
+  let id;
+  params && ({ id } = params);
+
+  const query = `
+    SELECT
+      ID
+      , NICKNAME
+      , PASSWORD
+      , COMMENTS
+      , IS_SECRET
+    FROM
+      COMMENTS
+    WHERE
+      ID = :id
+  `;
+
+  return { query, params };
+}
+
+function UPDATE_COMMENT(params?: any) {
+  let id, ip, nickName, password, comments, update_dt, isSecret;
+  params &&
+    ({ id, ip, nickName, password, comments, update_dt, isSecret } = params);
+
+  const query = `
+    UPDATE
+      COMMENTS
+    SET
+      UPDATE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
+      ${ip ? ', IP = :ip' : ''}
+      ${nickName ? ', NICKNAME = :nickName' : ''}
+      ${password ? ', PASSWORD = :password' : ''}
+      ${comments ? ', COMMENTS = :comments' : ''}
+      ${isSecret ? ', IS_SECRET = :isSecret' : ''}
+    WHERE
+      ID = :id
+  `;
+
+  return { query, params };
+}
+
 export {
   SELECT_VISIT_COUNT,
   SELECT_CATEGORIES,
@@ -362,5 +406,7 @@ export {
   DELETE_HEART,
   SELECT_COMMENTS,
   INSERT_COMMENT,
-  SELECT_CONTENT_FOR_EXISTS
+  SELECT_CONTENT_FOR_EXISTS,
+  SELECT_COMMENT_FOR_EXISTS,
+  UPDATE_COMMENT
 };
