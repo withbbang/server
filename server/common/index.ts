@@ -13,6 +13,7 @@ import { heart, set } from './heart';
 import {
   comments,
   createComment,
+  updateCommentPage,
   updateComment,
   deleteComment
 } from './comment';
@@ -35,5 +36,6 @@ common.use('/heart', heart);
 common.use('/set-heart', set);
 common.use('/comments', comments);
 common.use('/create-comment', createComment);
+common.use('/update-comment-page', updateCommentPage);
 common.use('/update-comment', updateComment);
 common.use('/delete-comment', deleteComment);
