@@ -294,7 +294,7 @@ deleteComment.post(
     /* 1. 댓글이 유효한지 검사 */
     let comments: null | Array<Comment> = null;
     try {
-      comments = await handleSql(SELECT_COMMENT_FOR_EXISTS({ commentId }));
+      comments = await handleSql(SELECT_COMMENT_FOR_EXISTS({ id: commentId }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }

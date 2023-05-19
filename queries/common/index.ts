@@ -395,7 +395,7 @@ function DELETE_COMMENT(params?: any) {
     UPDATE
       COMMENTS
     SET
-      DELETE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
+      DELETE_DT = TO_DATE(:delete_dt, 'YYYYMMDDHH24MISS')
       , IS_DELETED = 'Y'
     WHERE
       ID = :commentId
