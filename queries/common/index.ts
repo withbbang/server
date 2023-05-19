@@ -387,6 +387,23 @@ function UPDATE_COMMENT(params?: any) {
   return { query, params };
 }
 
+function DELETE_COMMENT(params?: any) {
+  let commentId, delete_dt;
+  params && ({ commentId, delete_dt } = params);
+
+  const query = `
+    UPDATE
+      COMMENTS
+    SET
+      DELETE_DT = TO_DATE(:update_dt, 'YYYYMMDDHH24MISS')
+      , IS_DELETED = 'Y'
+    WHERE
+      ID = :commentId
+  `;
+
+  return { query, params };
+}
+
 export {
   SELECT_VISIT_COUNT,
   SELECT_CATEGORIES,
@@ -408,5 +425,6 @@ export {
   INSERT_COMMENT,
   SELECT_CONTENT_FOR_EXISTS,
   SELECT_COMMENT_FOR_EXISTS,
-  UPDATE_COMMENT
+  UPDATE_COMMENT,
+  DELETE_COMMENT
 };

@@ -8,7 +8,8 @@ import {
   INSERT_COMMENT,
   SELECT_CONTENT_FOR_EXISTS,
   SELECT_COMMENT_FOR_EXISTS,
-  UPDATE_COMMENT
+  UPDATE_COMMENT,
+  DELETE_COMMENT
 } from '../../queries/common';
 import { handleSql } from '../../modules/oracleSetting';
 import { handleCheckRequired, handleGetLocaleTime } from '../../modules/common';
@@ -24,6 +25,7 @@ export const comments: Router = Router();
 export const createComment: Router = Router();
 export const confirmComment: Router = Router();
 export const updateComment: Router = Router();
+export const deleteComment: Router = Router();
 
 comments.get(
   '/:contentId',
@@ -273,5 +275,34 @@ updateComment.post(
     } else {
       return res.json({ ...Results[120] });
     }
+  }
+);
+
+deleteComment.post(
+  '/',
+  async function (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void | Response<any, Record<string, any>>> {
+    /* 0. 필수값 존재 확인 */
+    const { commentId } = req.body;
+    if (handleCheckRequired({ commentId })) {
+      return res.json(Results[130]);
+    }
+
+    /* 1. 댓글 삭제 */
+    try {
+      await handleSql(
+        DELETE_COMMENT({
+          commentId,
+          delete_dt: handleGetLocaleTime('db')
+        })
+      );
+    } catch (e: any) {
+      return next(new Error(e.stack));
+    }
+
+    return res.json({ ...Results[0] });
   }
 );

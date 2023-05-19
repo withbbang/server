@@ -10,7 +10,12 @@ import { contents } from './contents';
 import { searchContents } from './searchContents';
 import { content } from './content';
 import { heart, set } from './heart';
-import { comments, createComment, updateComment } from './comment';
+import {
+  comments,
+  createComment,
+  updateComment,
+  deleteComment
+} from './comment';
 
 export const common: Router = Router();
 
@@ -31,3 +36,4 @@ common.use('/set-heart', set);
 common.use('/comments', comments);
 common.use('/create-comment', createComment);
 common.use('/update-comment', updateComment);
+common.use('/delete-comment', deleteComment);
