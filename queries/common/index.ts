@@ -265,6 +265,7 @@ function DELETE_HEART(params?: any) {
   return { query, params };
 }
 
+//TODO: 계층형 쿼리 참고 https://dev-cini.tistory.com/47
 function SELECT_COMMENTS(params?: any) {
   let contentId;
   params && ({ contentId } = params);
@@ -275,7 +276,7 @@ function SELECT_COMMENTS(params?: any) {
       , REF_ID
       , (CASE IS_SECRET WHEN 'Y' THEN '익명' ELSE NICKNAME END) AS NICKNAME
       , (CASE IS_SECRET WHEN 'Y' THEN '비밀 댓글입니다.' ELSE COMMENTS END) AS COMMENTS
-      , TO_CHAR(CREATE_DT, 'YYYY.MM.DD HH24:mm:ss') AS CREATE_DT
+      , TO_CHAR(CREATE_DT, 'YYYY.MM.DD HH24:MI:SS') AS CREATE_DT
       , UPDATE_DT
       , IS_SECRET
     FROM
@@ -283,7 +284,11 @@ function SELECT_COMMENTS(params?: any) {
     WHERE
       CONTENTS_ID = :contentId
       AND IS_DELETED = 'N'
-    ORDER BY
+    START WITH
+      REF_ID IS NULL
+    CONNECT BY
+      REF_ID = PRIOR ID
+    ORDER SIBLINGS BY
       CREATE_DT
   `;
 
@@ -399,6 +404,7 @@ function DELETE_COMMENT(params?: any) {
       , IS_DELETED = 'Y'
     WHERE
       ID = :commentId
+      OR REF_ID = :commentId
   `;
 
   return { query, params };
