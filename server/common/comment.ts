@@ -286,23 +286,61 @@ deleteComment.post(
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
     /* 0. 필수값 존재 확인 */
-    const { commentId } = req.body;
-    if (handleCheckRequired({ commentId })) {
+    const { commentId, password } = req.body;
+    if (handleCheckRequired({ commentId, password })) {
       return res.json(Results[130]);
     }
 
-    /* 1. 댓글 삭제 */
+    /* 1. 댓글이 유효한지 검사 */
+    let comments: null | Array<Comment> = null;
     try {
-      await handleSql(
-        DELETE_COMMENT({
-          commentId,
-          delete_dt: handleGetLocaleTime('db')
-        })
-      );
+      comments = await handleSql(SELECT_COMMENT_FOR_EXISTS({ commentId }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
 
-    return res.json({ ...Results[0] });
+    /* 2. 댓글이 있을 경우 */
+    if (Array.isArray(comments) && comments.length > 0) {
+      const comment: Comment = comments[0];
+
+      /* 3. 비밀번호 복호화 */
+      let decrypted: string = '';
+      try {
+        decrypted = handleRSADecrypt(password, privateKey);
+      } catch (e: any) {
+        return next(new Error(e.stack));
+      }
+
+      /* 4. 비밀번호 해쉬 */
+      let hash: string = '';
+      try {
+        hash = handleCreateSha512(decrypted, '');
+      } catch (e: any) {
+        return next(new Error(e.stack));
+      }
+
+      /* 5. 비밀번호 같을 경우 */
+      if (hash === comment.PASSWORD) {
+        /* 6. 댓글 삭제 */
+        try {
+          await handleSql(
+            DELETE_COMMENT({
+              commentId,
+              delete_dt: handleGetLocaleTime('db')
+            })
+          );
+        } catch (e: any) {
+          return next(new Error(e.stack));
+        }
+
+        return res.json({ ...Results[0] });
+      } else {
+        /* 7. 비밀번호 다를 경우 */
+        return res.json({ ...Results[20] });
+      }
+    } else {
+      /* 8. 댓글이 없을 경우 */
+      return res.json({ ...Results[120] });
+    }
   }
 );
