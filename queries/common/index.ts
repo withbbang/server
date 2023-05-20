@@ -266,30 +266,60 @@ function DELETE_HEART(params?: any) {
 }
 
 //TODO: 계층형 쿼리 참고 https://dev-cini.tistory.com/47
+/**
+ * 쿼리 내에 필수 변수 외에 다른 변수도 들어갈 경우
+ * 'illegal variable name/number'에러발생, 여기서는 id
+ */
 function SELECT_COMMENTS(params?: any) {
-  let contentId;
-  params && ({ contentId } = params);
+  let id, contentId;
+  params && ({ id, contentId } = params);
 
   const query = `
-    SELECT
-      ID
-      , REF_ID
-      , (CASE IS_SECRET WHEN 'Y' THEN '익명' ELSE NICKNAME END) AS NICKNAME
-      , (CASE IS_SECRET WHEN 'Y' THEN '비밀 댓글입니다.' ELSE COMMENTS END) AS COMMENTS
-      , TO_CHAR(CREATE_DT, 'YYYY.MM.DD HH24:MI:SS') AS CREATE_DT
-      , UPDATE_DT
-      , IS_SECRET
-    FROM
-      COMMENTS
-    WHERE
-      CONTENTS_ID = :contentId
-      AND IS_DELETED = 'N'
-    START WITH
-      REF_ID IS NULL
-    CONNECT BY
-      REF_ID = PRIOR ID
-    ORDER SIBLINGS BY
-      CREATE_DT
+  SELECT
+    ID
+    , REF_ID
+    , (CASE IS_SECRET
+        WHEN 'Y' THEN 
+          ${
+            id
+              ? `
+              CASE (SELECT AUTH FROM USERS WHERE ID = :id)
+                WHEN 0 THEN NICKNAME
+                ELSE '익명' END
+            `
+              : `'익명'`
+          }
+        ELSE NICKNAME
+        END
+      ) AS NICKNAME
+    , (CASE IS_SECRET
+        WHEN 'Y' THEN 
+          ${
+            id
+              ? `
+              CASE (SELECT AUTH FROM USERS WHERE ID = :id)
+                WHEN 0 THEN COMMENTS
+                ELSE '비밀 댓글입니다.' END
+            `
+              : `'비밀 댓글입니다.'`
+          }
+        ELSE COMMENTS
+        END
+      ) AS COMMENTS
+    , TO_CHAR(CREATE_DT, 'YYYY.MM.DD HH24:MI:SS') AS CREATE_DT
+    , UPDATE_DT
+    , IS_SECRET
+  FROM
+    COMMENTS
+  WHERE
+    CONTENTS_ID = :contentId
+    AND IS_DELETED = 'N'
+  START WITH
+    REF_ID IS NULL
+  CONNECT BY
+    REF_ID = PRIOR ID
+  ORDER SIBLINGS BY
+    CREATE_DT
   `;
 
   return { query, params };

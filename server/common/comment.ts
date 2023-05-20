@@ -27,19 +27,22 @@ export const updateCommentPage: Router = Router();
 export const updateComment: Router = Router();
 export const deleteComment: Router = Router();
 
-comments.get(
-  '/:contentId',
+comments.post(
+  '/',
   async function (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void | Response<any, Record<string, any>>> {
-    const contentId = req.params.contentId;
+    const { id, contentId } = req.body;
+    if (handleCheckRequired({ contentId })) {
+      return res.json(Results[130]);
+    }
 
     /* 1. 댓글들 가져오기 */
     let comments: null | Array<Comment> = null;
     try {
-      comments = await handleSql(SELECT_COMMENTS({ contentId }));
+      comments = await handleSql(SELECT_COMMENTS({ id, contentId }));
     } catch (e: any) {
       return next(new Error(e.stack));
     }
