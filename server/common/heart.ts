@@ -88,7 +88,6 @@ set.post(
     }
 
     /* 4. 갱신된 좋아요 정보 가져오기 */
-    //TODO: 디도스 우려가 있으므로 화면에서만 갱신되도록 해야할 수도 있음
     let heart: Array<Heart>;
     try {
       heart = await handleSql(SELECT_HEARTS_COUNT_ISHEART({ ip, contentId }));
